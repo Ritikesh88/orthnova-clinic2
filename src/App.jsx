@@ -1,6 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
+// Helper: Check user role
+function hasRole(requiredRole) {
+  const user = JSON.parse(localStorage.getItem('user'));
+  return user && user.role === requiredRole;
+}
+
+// Calculate Age from DOB
+const calculateAge = (dob) => {
+  if (!dob) return '';
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 // Generate Patient ID
 const generatePatientId = (name, contact) => {
   const year = new Date().getFullYear().toString().slice(-2);
@@ -15,24 +34,11 @@ const generateDoctorId = (name, regNo) => {
   const reg4 = regNo.slice(-4);
   const initials = name
     .split(' ')
-    .map((word) => word.charAt(0))
+    .map(word => word.charAt(0))
     .join('')
     .toUpperCase()
     .padEnd(2, 'X');
   return `DOC-${year}${reg4}-${initials}`;
-};
-
-//Age Calculation Function
-const calculateAge = (dob) => {
-  if (!dob) return '';
-  const birthDate = new Date(dob);
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
 };
 
 // Patient Registration Component
@@ -66,7 +72,6 @@ function PatientRegistration() {
     }
 
     const patientId = generatePatientId(formData.name, formData.contactNumber);
-
     const age = calculateAge(formData.dob);
 
     const { error } = await supabase.from('patients').insert({
@@ -80,7 +85,6 @@ function PatientRegistration() {
 
     if (error) {
       setError('Failed to register patient.');
-      console.error(error);
       return;
     }
 
@@ -236,12 +240,10 @@ function DoctorRegistration() {
 
     if (error) {
       setError('Failed to register doctor.');
-      console.error(error);
       return;
     }
 
     setSuccess(`Doctor registered successfully! ID: ${doctorId}`);
-
     setFormData({
       name: '',
       contactNumber: '',
@@ -332,6 +334,10 @@ function ServiceCatalog() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -358,7 +364,6 @@ function ServiceCatalog() {
 
     if (error) {
       setError('Failed to add service.');
-      console.error(error);
       return;
     }
 
@@ -369,7 +374,7 @@ function ServiceCatalog() {
       price: '',
     });
 
-    fetchServices(); // Refresh list
+    fetchServices();
   };
 
   const fetchServices = async () => {
@@ -380,10 +385,6 @@ function ServiceCatalog() {
     }
     setServices(data || []);
   };
-
-  useEffect(() => {
-    fetchServices();
-  }, []);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
@@ -447,7 +448,6 @@ function ServiceCatalog() {
         </div>
       </form>
 
-      {/* Service List */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Available Services</h3>
         <ul className="space-y-2">
@@ -530,8 +530,7 @@ function BillingPage() {
     const totalAmount = calculateTotal();
     const billNumber = `BILL-${Date.now()}`;
 
-    // Save bill
-    const { data: bill, error: billError } = await supabase.from('bills').insert({
+    const {  bill, error: billError } = await supabase.from('bills').insert({
       bill_number: billNumber,
       patient_id: billData.patientId,
       total_amount: totalAmount,
@@ -542,11 +541,9 @@ function BillingPage() {
 
     if (billError) {
       setError('Failed to create bill.');
-      console.error(billError);
       return;
     }
 
-    // Save bill items
     const billItems = billData.services.map(item => ({
       bill_id: bill.id,
       service_id: item.serviceId,
@@ -557,7 +554,6 @@ function BillingPage() {
     const { error: itemsError } = await supabase.from('bill_items').insert(billItems);
     if (itemsError) {
       setError('Failed to add bill items.');
-      console.error(itemsError);
       return;
     }
 
@@ -567,53 +563,7 @@ function BillingPage() {
       services: [{ serviceId: '', quantity: 1 }]
     });
   };
- // PrintableBill Component (Local to BillingPage)
-  const PrintableBill = () => {
-    const total = calculateTotal();
-    const selectedPatient = patients.find(p => p.patient_id === billData.patientId);
-    return (
-      <div className="mt-6 border-t pt-4 print:block">
-        <h3 className="text-lg font-bold text-gray-800 mb-3">Bill Preview</h3>
-        <div className="bg-white p-4 rounded-md border border-gray-200">
-          <div className="flex justify-between items-center mb-2">
-            <h4 className="text-md font-semibold">Bill #{`BILL-${Date.now()}`}</h4>
-            <p className="text-sm text-gray-600">{new Date().toLocaleDateString()}</p>
-          </div>
 
-          <div className="mb-4">
-            <p className="text-sm text-gray-600">Patient:</p>
-            <p className="font-medium">{selectedPatient?.name} ({billData.patientId})</p>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            <p className="text-sm text-gray-600">Services:</p>
-            {billData.services.map((item, index) => {
-              const service = services.find(s => s.id === item.serviceId);
-              return service ? (
-                <div key={index} className="flex justify-between text-sm">
-                  <span>{service.service_name}</span>
-                  <span>₹{service.price} x {item.quantity} = ₹{service.price * item.quantity}</span>
-                </div>
-              ) : null;
-            })}
-          </div>
-
-          <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between font-bold">
-            <span>Total:</span>
-            <span>₹{total}</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="mt-4 w-full py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition duration-200 print:hidden"
-          >
-            Print Bill
-          </button>
-        </div>
-      </div>
-    );
-  };
   return (
     <div className="bg-white p-6 rounded-lg shadow">
       <h2 className="text-xl font-bold mb-4">Generate Bill</h2>
@@ -692,12 +642,9 @@ function BillingPage() {
           <button
             type="button"
             onClick={addServiceRow}
-            className="mt-3 inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition"
+            className="mt-3 text-sm text-blue-600 hover:text-blue-800"
           >
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Add Service
+            + Add Another Service
           </button>
         </div>
 
@@ -719,178 +666,6 @@ function BillingPage() {
   );
 }
 
-// BillHistory Component
-function BillHistory() {
-  const [bills, setBills] = useState([]);
-  const [filter, setFilter] = useState('');
-  const [filteredBills, setFilteredBills] = useState([]);
-
-  useEffect(() => {
-    fetchBills();
-  }, []);
-
-  const fetchBills = async () => {
-    const { data, error } = await supabase
-      .from('bills')
-      .select(`
-        id,
-        bill_number,
-        patient_id,
-        total_amount,
-        paid_amount,
-        balance,
-        status,
-        created_at,
-        bill_items (
-          id,
-          service_id (
-            service_name,
-            price
-          ),
-          quantity
-        )
-      `);
-
-    if (error) {
-      console.error('Failed to load bills', error);
-      return;
-    }
-
-    setBills(data || []);
-    setFilteredBills(data || []);
-  };
-
-  const handleFilter = (e) => {
-    const value = e.target.value.toLowerCase();
-    setFilter(value);
-
-    const filtered = filter
-      ? bills.filter(bill =>
-          bill.patient_id.toLowerCase().includes(value) ||
-          bill.bill_number.toLowerCase().includes(value)
-        )
-      : bills;
-
-    setFilteredBills(filtered);
-  };
-
-  const handlePrintBill = (bill) => {
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Print Bill</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            .bill { max-width: 600px; margin: auto; }
-            .bill h2 { text-align: center; }
-            .bill .flex { display: flex; justify-content: space-between; }
-            .bill .total { font-weight: bold; border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; }
-            .bill .print-hide { display: none; }
-            @media print {
-              body { padding: 0; }
-              .print-hide { display: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="bill">
-            <h2>Orthonova Clinic</h2>
-            <p><strong>Bill Number:</strong> ${bill.bill_number}</p>
-            <p><strong>Patient ID:</strong> ${bill.patient_id}</p>
-            <p><strong>Date:</strong> ${new Date(bill.created_at).toLocaleDateString()}</p>
-            <hr class="my-4" />
-            <h3>Bill Details</h3>
-            <ul>
-              ${bill.bill_items
-                .map(
-                  (item) =>
-                    `<li>${item.service_id.service_name} (₹${item.service_id.price}) x ${item.quantity} = ₹${
-                      item.service_id.price * item.quantity
-                    }</li>`
-                )
-                .join('')}
-            </ul>
-            <div class="total">
-              <div class="flex">
-                <span>Total:</span>
-                <span>₹${bill.total_amount}</span>
-              </div>
-              <div class="flex">
-                <span>Paid:</span>
-                <span>₹${bill.paid_amount}</span>
-              </div>
-              <div class="flex">
-                <span>Balance:</span>
-                <span>₹${bill.balance}</span>
-              </div>
-            </div>
-            <p class="print-hide mt-4 text-center">This is a printable bill.</p>
-          </div>
-          <script>window.print();</script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
-
-  return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Bill History</h2>
-
-      <div className="mb-4">
-        <input
-          type="text"
-          value={filter}
-          onChange={handleFilter}
-          placeholder="Search by Bill No. or Patient ID"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
-
-      <div className="space-y-4">
-        {filteredBills.length > 0 ? (
-          filteredBills.map((bill, index) => (
-            <div key={index} className="p-4 border border-gray-200 rounded-md bg-gray-50">
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-sm text-gray-600">Bill #<strong>{bill.bill_number}</strong></p>
-                  <p className="text-sm text-gray-600">Patient: <strong>{bill.patient_id}</strong></p>
-                  <p className="text-sm text-gray-600">Date: {new Date(bill.created_at).toLocaleDateString()}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">Total: <strong>₹{bill.total_amount}</strong></p>
-                  <p className="text-sm text-gray-600">Balance: <strong>₹{bill.balance}</strong></p>
-                  <button
-                    type="button"
-                    onClick={() => handlePrintBill(bill)}
-                    className="mt-2 text-sm text-blue-600 hover:text-blue-800"
-                  >
-                    Print Bill
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-700">Services:</h4>
-                <ul className="mt-1 text-sm text-gray-800 space-y-1">
-                  {bill.bill_items.map((item, idx) => (
-                    <li key={idx}>
-                      {item.service_id.service_name} (₹{item.service_id.price}) x {item.quantity}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-sm text-gray-500">No bills found.</p>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // PrescriptionForm Component
 function PrescriptionForm() {
   const [formData, setFormData] = useState({
@@ -901,9 +676,8 @@ function PrescriptionForm() {
   });
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
-
-  const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchPatients();
@@ -1030,7 +804,7 @@ function PrescriptionForm() {
         <div className="mt-6 p-4 bg-white border border-gray-300 rounded-md shadow-inner print:block print:border-0">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-gray-800">Prescription</h3>
-            <p className="text-sm text-gray-600">Date: {new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-gray-500">Date: {new Date().toLocaleDateString()}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -1063,7 +837,7 @@ function PrescriptionForm() {
   );
 }
 
-// UserManagement Component
+// UserManagement Component (Admin only)
 function UserManagement() {
   const [formData, setFormData] = useState({
     email: '',
@@ -1081,11 +855,8 @@ function UserManagement() {
 
   const fetchUsers = async () => {
     const { data, error } = await supabase.from('users').select();
-    if (error) {
-      console.error('Failed to load users', error);
-      return;
-    }
-    setUsers(data || []);
+    if (error) console.error('Failed to load users', error);
+    else setUsers(data || []);
   };
 
   const handleChange = (e) => {
@@ -1103,14 +874,13 @@ function UserManagement() {
 
     const { error } = await supabase.from('users').insert({
       email: formData.email,
-      password: formData.password, // In real app, use hashed password or Supabase Auth
+      password: formData.password,
       role: formData.role,
       department: formData.department,
     });
 
     if (error) {
       setError('Failed to add user.');
-      console.error(error);
       return;
     }
 
@@ -1124,6 +894,14 @@ function UserManagement() {
 
     fetchUsers();
   };
+
+  if (!hasRole('admin')) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow text-center">
+        <p className="text-gray-600">Only admins can access this page.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
@@ -1142,6 +920,7 @@ function UserManagement() {
           <label className="block text-sm font-medium text-gray-700">Email</label>
           <input
             name="email"
+            type="email"
             value={formData.email}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -1198,28 +977,24 @@ function UserManagement() {
         </div>
       </form>
 
-      {/* User List */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Registered Users</h3>
-        <div className="space-y-2">
-          {users.length > 0 ? (
-            users.map((user, index) => (
-              <div key={index} className="p-3 border border-gray-200 rounded-md bg-gray-50 text-sm">
-                <p><strong>{user.email}</strong> ({user.role})</p>
-                <p className="text-gray-600">Department: {user.department}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">No users found.</p>
-          )}
-        </div>
+        <ul className="space-y-2">
+          {users.map((user, index) => (
+            <li key={index} className="p-3 border border-gray-200 rounded-md bg-gray-50 text-sm">
+              <p><strong>{user.email}</strong></p>
+              <p className="text-gray-600">Role: {user.role}</p>
+              <p className="text-gray-600">Department: {user.department}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
 }
 
 // Login Component
-function Login() {
+function Login({ onLogin }) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -1232,27 +1007,49 @@ function Login() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
+    setError('');
+    setError('');
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password,
     });
-
-    if (error) {
+    if (signInError) {
       setError('Login failed. Please check your credentials.');
       return;
     }
 
-    const { user } = data;
-    setUser(user);
-    setFormData({ email: '', password: '' });
+    const { data, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      setError('Failed to load user data.');
+      return;
+    }
+
+    const userEmail = data.user.email;
+
+    const {  userData, error: dbError } = await supabase
+      .from('users')
+      .select()
+      .eq('email', userEmail)
+      .single();
+
+    if (dbError) {
+      setError('You are not registered in the system.');
+      return;
+    }
+
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    onLogin && onLogin(userData);
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    localStorage.removeItem('user');
     setUser(null);
+    onLogin && onLogin(null);
   };
 
   return (
@@ -1264,7 +1061,7 @@ function Login() {
       )}
 
       {!user ? (
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSignIn} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
@@ -1301,7 +1098,9 @@ function Login() {
       ) : (
         <div>
           <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">
-            Logged in as <strong>{user.email}</strong>
+            <p>Logged in as:</p>
+            <p className="font-medium">{user.name || user.email}</p>
+            <p className="text-sm text-gray-600">Role: {user.role}</p>
           </div>
 
           <button
@@ -1317,23 +1116,206 @@ function Login() {
   );
 }
 
+// BillHistory Component
+function BillHistory() {
+  const [bills, setBills] = useState([]);
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    fetchBills();
+  }, []);
+
+  const fetchBills = async () => {
+    const { data, error } = await supabase
+      .from('bills')
+      .select(`
+        id,
+        bill_number,
+        patient_id,
+        total_amount,
+        paid_amount,
+        balance,
+        status,
+        created_at,
+        bill_items (
+          id,
+          service_id (
+            service_name,
+            price
+          ),
+          quantity
+        )
+      `);
+
+    if (error) {
+      console.error('Failed to load bills', error);
+      return;
+    }
+
+    setBills(data || []);
+  };
+
+  const handlePrintBill = (bill) => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Bill</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .bill { max-width: 600px; margin: auto; }
+            .bill h2 { text-align: center; }
+            .bill .flex { display: flex; justify-content: space-between; }
+            .bill .total { font-weight: bold; border-top: 1px solid #ccc; padding-top: 10px; }
+            @media print {
+              body * { visibility: hidden; }
+              .print-area, .print-area * { visibility: visible; }
+              .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-area">
+            <h2>Orthonova Clinic</h2>
+            <p><strong>Bill Number:</strong> ${bill.bill_number}</p>
+            <p><strong>Patient ID:</strong> ${bill.patient_id}</p>
+            <p><strong>Date:</strong> ${new Date(bill.created_at).toLocaleDateString()}</p>
+            <hr class="my-4" />
+            <h3>Bill Details</h3>
+            <ul>
+              ${bill.bill_items
+                .map(
+                  (item) =>
+                    `<li>${item.service_id.service_name} (₹${item.service_id.price}) x ${item.quantity} = ₹${
+                      item.service_id.price * item.quantity
+                    }</li>`
+                )
+                .join('')}
+            </ul>
+            <div class="total">
+              <div class="flex">
+                <span>Total:</span>
+                <span>₹${bill.total_amount}</span>
+              </div>
+              <div class="flex">
+                <span>Paid:</span>
+                <span>₹${bill.paid_amount}</span>
+              </div>
+              <div class="flex">
+                <span>Balance:</span>
+                <span>₹${bill.balance}</span>
+              </div>
+            </div>
+            <p class="mt-4">This is a printable bill.</p>
+            <script>window.print();</script>
+          </div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow">
+      <h2 className="text-xl font-bold mb-4">Bill History</h2>
+
+      <div className="mb-4">
+        <input
+          type="text"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search by Bill No. or Patient ID"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+        />
+      </div>
+
+      <div className="space-y-4">
+        {bills.length > 0 ? (
+          bills.map((bill, index) => (
+            <div key={index} className="p-4 border border-gray-200 rounded-md bg-gray-50">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm text-gray-600">Bill #<strong>{bill.bill_number}</strong></p>
+                  <p className="text-sm text-gray-600">Patient: <strong>{bill.patient_id}</strong></p>
+                  <p className="text-sm text-gray-600">Date: {new Date(bill.created_at).toLocaleDateString()}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">Total: <strong>₹{bill.total_amount}</strong></p>
+                  <p className="text-sm text-gray-600">Balance: <strong>₹{bill.balance}</strong></p>
+                  <button
+                    type="button"
+                    onClick={() => handlePrintBill(bill)}
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    Print Bill
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-sm text-gray-500">No bills found.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Main App Component
 export default function App() {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-    });
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        const { error } = await supabase
+          .from('users')
+          .select()
+          .eq('email', data.session.user.email)
+          .single();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
+        if (error) {
+          setSession(true);
+          return;
+        }
+
+        setSession(true);
+      } else {
+        setSession(false);
+      }
+    };
+
+    checkSession();
+
+    const { subscription } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        checkSession();
+      } else if (event === 'SIGNED_OUT') {
+        setSession(false);
+      }
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
+
+  const handleLogin = () => {
+    setSession(true);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setSession(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -1342,10 +1324,19 @@ export default function App() {
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Orthonova Clinic</h1>
-            <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services, Billing & User Management</p>
+            <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
           </div>
           <div className="w-64">
-            <Login />
+            {session ? (
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-600 hover:text-red-800"
+              >
+                Logout
+              </button>
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
           </div>
         </div>
       </header>
@@ -1358,13 +1349,14 @@ export default function App() {
             <DoctorRegistration />
             <ServiceCatalog />
             <BillingPage />
-            <PrescriptionForm />
+            {hasRole('doctor') && <PrescriptionForm />}
+            {hasRole('admin') && <UserManagement />}
             <BillHistory />
-            <UserManagement />
           </>
         ) : (
           <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
-            <p className="text-lg text-gray-700">Please log in to access the clinic system</p>
+            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
+            <Login onLogin={handleLogin} />
           </div>
         )}
       </main>
