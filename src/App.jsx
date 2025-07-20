@@ -1012,7 +1012,7 @@ function Login({ onLogin }) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-
+    setError('');
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password,
