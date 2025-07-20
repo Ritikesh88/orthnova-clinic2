@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
-
 // Helper: Check user role
 function hasRole(requiredRole) {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -15,7 +14,10 @@ const calculateAge = (dob) => {
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
     age--;
   }
   return age;
@@ -179,7 +181,7 @@ function PatientRegistration() {
             rows="3"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter full address"
-          ></textarea>
+          />
         </div>
 
         <div>
@@ -471,7 +473,7 @@ function ServiceCatalog() {
 function BillingPage() {
   const [billData, setBillData] = useState({
     patientId: '',
-    services: [{ serviceId: '', quantity: 1 }]
+    services: [{ serviceId: '', quantity: 1 }],
   });
   const [patients, setPatients] = useState([]);
   const [services, setServices] = useState([]);
@@ -504,7 +506,7 @@ function BillingPage() {
   const addServiceRow = () => {
     setBillData({
       ...billData,
-      services: [...billData.services, { serviceId: '', quantity: 1 }]
+      services: [...billData.services, { serviceId: '', quantity: 1 }],
     });
   };
 
@@ -515,7 +517,7 @@ function BillingPage() {
 
   const calculateTotal = () => {
     return billData.services.reduce((total, item) => {
-      const service = services.find(s => s.id === item.serviceId);
+      const service = services.find((s) => s.id === item.serviceId);
       return total + (service ? service.price * item.quantity : 0);
     }, 0);
   };
@@ -537,7 +539,7 @@ function BillingPage() {
       total_amount: totalAmount,
       paid_amount: 0,
       balance: totalAmount,
-      status: 'Pending'
+      status: 'Pending',
     }).select('id, bill_number').single();
 
     if (billError) {
@@ -545,11 +547,11 @@ function BillingPage() {
       return;
     }
 
-    const billItems = billData.services.map(item => ({
+    const billItems = billData.services.map((item) => ({
       bill_id: bill.id,
       service_id: item.serviceId,
       quantity: item.quantity,
-      amount: services.find(s => s.id === item.serviceId)?.price * item.quantity
+      amount: services.find((s) => s.id === item.serviceId)?.price * item.quantity,
     }));
 
     const { error: itemsError } = await supabase.from('bill_items').insert(billItems);
@@ -561,7 +563,7 @@ function BillingPage() {
     setSuccess(`Bill generated successfully! Bill #${bill.bill_number}`);
     setBillData({
       patientId: '',
-      services: [{ serviceId: '', quantity: 1 }]
+      services: [{ serviceId: '', quantity: 1 }],
     });
   };
 
@@ -587,7 +589,7 @@ function BillingPage() {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select Patient</option>
-            {patients.map(patient => (
+            {patients.map((patient) => (
               <option key={patient.patient_id} value={patient.patient_id}>
                 {patient.name} ({patient.patient_id})
               </option>
@@ -609,7 +611,7 @@ function BillingPage() {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="">Select Service</option>
-                    {services.map(service => (
+                    {services.map((service) => (
                       <option key={service.id} value={service.id}>
                         {service.service_name} (₹{service.price})
                       </option>
@@ -677,8 +679,8 @@ function PrescriptionForm() {
   });
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchPatients();
@@ -697,20 +699,24 @@ function PrescriptionForm() {
     else setDoctors(data || []);
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!formData.patientId || !formData.doctorId || !formData.diagnosis || !formData.medications) {
       setError('All fields are required.');
       return;
     }
-
     setSuccess('Prescription generated successfully!');
   };
 
   const handlePrint = () => {
     window.print();
   };
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
@@ -730,11 +736,11 @@ function PrescriptionForm() {
           <select
             name="patientId"
             value={formData.patientId}
-            onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
+            onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select Patient</option>
-            {patients.map(patient => (
+            {patients.map((patient) => (
               <option key={patient.patient_id} value={patient.patient_id}>
                 {patient.name} ({patient.patient_id})
               </option>
@@ -747,11 +753,11 @@ function PrescriptionForm() {
           <select
             name="doctorId"
             value={formData.doctorId}
-            onChange={(e) => setFormData({ ...formData, doctorId: e.target.value })}
+            onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select Doctor</option>
-            {doctors.map(doctor => (
+            {doctors.map((doctor) => (
               <option key={doctor.doctor_id} value={doctor.doctor_id}>
                 {doctor.name} ({doctor.doctor_id})
               </option>
@@ -764,7 +770,7 @@ function PrescriptionForm() {
           <textarea
             name="diagnosis"
             value={formData.diagnosis}
-            onChange={(e) => setFormData({ ...formData, diagnosis: e.target.value })}
+            onChange={handleChange}
             rows="3"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter diagnosis"
@@ -776,7 +782,7 @@ function PrescriptionForm() {
           <textarea
             name="medications"
             value={formData.medications}
-            onChange={(e) => setFormData({ ...formData, medications: e.target.value })}
+            onChange={handleChange}
             rows="4"
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter medications"
@@ -790,7 +796,6 @@ function PrescriptionForm() {
           >
             Generate Prescription
           </button>
-
           <button
             type="button"
             onClick={handlePrint}
@@ -839,8 +844,7 @@ function PrescriptionForm() {
   );
 }
 
-
-// UserManagement Component (Admin only)
+// UserManagement Component (Admin Only)
 function UserManagement() {
   const [formData, setFormData] = useState({
     email: '',
@@ -858,8 +862,11 @@ function UserManagement() {
 
   const fetchUsers = async () => {
     const { data, error } = await supabase.from('users').select();
-    if (error) console.error('Failed to load users', error);
-    else setUsers(data || []);
+    if (error) {
+      console.error('Failed to load users', error);
+      return;
+    }
+    setUsers(data || []);
   };
 
   const handleChange = (e) => {
@@ -875,19 +882,35 @@ function UserManagement() {
       return;
     }
 
-    const { error } = await supabase.from('users').insert({
+    // Prevent multiple receptionists
+    if (formData.role === 'receptionist' && users.some(u => u.role === 'receptionist')) {
+      setError('Only one receptionist is allowed.');
+      return;
+    }
+
+    const { error } = await supabase.auth.admin.createUser({
       email: formData.email,
       password: formData.password,
+      email_confirm: true,
+    });
+
+    if (error) {
+      setError('Failed to create user.');
+      return;
+    }
+
+    const { error: dbError } = await supabase.from('users').insert({
+      email: formData.email,
       role: formData.role,
       department: formData.department,
     });
 
-    if (error) {
-      setError('Failed to add user.');
+    if (dbError) {
+      setError('Failed to save user details.');
       return;
     }
 
-    setSuccess('User added successfully!');
+    setSuccess('User created successfully!');
     setFormData({
       email: '',
       password: '',
@@ -897,6 +920,26 @@ function UserManagement() {
 
     fetchUsers();
   };
+
+  const handleChangePassword = async () => {
+    if (!formData.email || !formData.password) {
+      setError('Email and new password are required.');
+      return;
+    }
+
+    const { error } = await supabase.auth.admin.updateUserById(
+      users.find(u => u.email === formData.email)?.id,
+      { password: formData.password }
+    );
+
+    if (error) {
+      setError('Failed to change password.');
+      return;
+    }
+
+    setSuccess('Password changed successfully.');
+  };
+
 
   if (!hasRole('admin')) {
     return (
@@ -908,7 +951,7 @@ function UserManagement() {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Add User</h2>
+      <h2 className="text-xl font-bold mb-4">Create User (Admin Only)</h2>
 
       {success && (
         <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
@@ -953,9 +996,8 @@ function UserManagement() {
           >
             <option value="">Select Role</option>
             <option value="admin">Admin</option>
-            <option value="doctor">Doctor</option>
             <option value="receptionist">Receptionist</option>
-            <option value="staff">Staff</option>
+            <option value="doctor">Doctor</option>
           </select>
         </div>
 
@@ -981,12 +1023,40 @@ function UserManagement() {
       </form>
 
       <div className="mt-6">
+        <h3 className="text-lg font-semibold mb-2">Change Password</h3>
+        <div className="space-y-2">
+          <input
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter email"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+          />
+          <input
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="New password"
+            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+          />
+          <button
+            type="button"
+            onClick={handleChangePassword}
+            className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md transition duration-200"
+          >
+            Change Password
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Registered Users</h3>
         <ul className="space-y-2">
           {users.map((user, index) => (
             <li key={index} className="p-3 border border-gray-200 rounded-md bg-gray-50 text-sm">
-              <p><strong>{user.email}</strong></p>
-              <p className="text-gray-600">Role: {user.role}</p>
+              <p><strong>{user.email}</strong> ({user.role})</p>
               <p className="text-gray-600">Department: {user.department}</p>
             </li>
           ))}
@@ -1012,7 +1082,7 @@ function Login({ onLogin }) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setError('');
+
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password,
@@ -1153,7 +1223,6 @@ function BillHistory() {
       console.error('Failed to load bills', error);
       return;
     }
-
     setBills(data || []);
   };
 
@@ -1164,55 +1233,21 @@ function BillHistory() {
         <head>
           <title>Print Bill</title>
           <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 20px;
-              color: black;
-              background: white;
-            }
-            .bill {
-              max-width: 600px;
-              margin: auto;
-              padding: 20px;
-              border: 1px solid #ccc;
-            }
-            .bill h2 {
-              text-align: center;
-              font-size: 18pt;
-              margin-bottom: 10px;
-            }
-            .bill .flex {
-              display: flex;
-              justify-content: space-between;
-              font-size: 12pt;
-            }
-            .bill .total {
-              font-weight: bold;
-              border-top: 1px solid #000;
-              padding-top: 10px;
-              margin-top: 10px;
-            }
-            .bill .footer {
-              margin-top: 30px;
-              text-align: right;
-              font-size: 12pt;
-            }
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .bill { max-width: 600px; margin: auto; }
+            .bill h2 { text-align: center; }
+            .bill .flex { display: flex; justify-content: space-between; }
+            .bill .total { font-weight: bold; border-top: 1px solid #ccc; padding-top: 10px; margin-top: 10px; }
             @media print {
-              body * {
-                visibility: hidden;
-              }
-              .print-area, .print-area * {
-                visibility: visible;
-              }
+              body * { visibility: hidden; }
+              .print-area, .print-area * { visibility: visible; }
               .print-area {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
-                padding: 20px;
-                font-size: 12pt;
                 background: white;
-                color: black;
+                padding: 20px;
               }
             }
           </style>
@@ -1249,10 +1284,6 @@ function BillHistory() {
                 <span>₹${bill.balance}</span>
               </div>
             </div>
-            <div class="footer">
-              <p>Signature: _______________________</p>
-              <p>Thank you for visiting Orthonova Clinic</p>
-            </div>
             <script>window.print();</script>
           </div>
         </body>
@@ -1264,7 +1295,6 @@ function BillHistory() {
   return (
     <div className="bg-white p-6 rounded-lg shadow">
       <h2 className="text-xl font-bold mb-4">Bill History</h2>
-
       <div className="mb-4">
         <input
           type="text"
@@ -1274,7 +1304,6 @@ function BillHistory() {
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
         />
       </div>
-
       <div className="space-y-4">
         {bills.length > 0 ? (
           bills.map((bill, index) => (
@@ -1291,7 +1320,7 @@ function BillHistory() {
                   <button
                     type="button"
                     onClick={() => handlePrintBill(bill)}
-                    className="mt-2 text-sm text-blue-600 hover:text-blue-800 no-print"
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-800"
                   >
                     Print Bill
                   </button>
@@ -1320,12 +1349,10 @@ export default function App() {
           .select()
           .eq('email', data.session.user.email)
           .single();
-
         if (error) {
           setSession(true);
           return;
         }
-
         setSession(true);
       } else {
         setSession(false);
@@ -1356,6 +1383,7 @@ export default function App() {
     setSession(false);
   };
 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -1382,22 +1410,35 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-  {session ? (
-    <>
-      <PatientRegistration />
-      <DoctorRegistration />
-      <ServiceCatalog />
-      <BillingPage />
-      {hasRole('doctor') && <PrescriptionForm />}
-      {hasRole('admin') && <UserManagement />}
-      <BillHistory />
-    </>
-  ) : (
-    <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
-      <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
-         </div>
-  )}
-</main>
+        {session ? (
+          <>
+            {hasRole('receptionist') && (
+              <>
+                <PatientRegistration />
+                <BillingPage />
+                <PrescriptionForm />
+              </>
+            )}
+
+            {hasRole('admin') && (
+              <>
+                <UserManagement />
+                <PatientRegistration />
+                <DoctorRegistration />
+                <ServiceCatalog />
+                <BillHistory />
+              </>
+            )}
+
+            {hasRole('doctor') && <PrescriptionForm />}
+          </>
+        ) : (
+          <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
+            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
+            <Login onLogin={handleLogin} />
+          </div>
+        )}
+      </main>
 
       {/* Footer */}
       <footer className="bg-white shadow-inner py-4">
