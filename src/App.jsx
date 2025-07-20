@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 
+
 // Helper: Check user role
 function hasRole(requiredRole) {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -698,6 +699,7 @@ function PrescriptionForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!formData.patientId || !formData.doctorId || !formData.diagnosis || !formData.medications) {
       setError('All fields are required.');
       return;
@@ -801,10 +803,10 @@ function PrescriptionForm() {
 
       {/* Prescription Preview */}
       {formData.patientId && formData.doctorId && (
-        <div className="mt-6 p-4 bg-white border border-gray-300 rounded-md shadow-inner print:block print:border-0">
+        <div id="prescription-preview" className="print-area mt-6 p-4 bg-white border border-gray-300 rounded-md shadow-inner">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-bold text-gray-800">Prescription</h3>
-            <p className="text-sm text-gray-500">Date: {new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-gray-600">Date: {new Date().toLocaleDateString()}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -828,7 +830,7 @@ function PrescriptionForm() {
             <p className="font-medium">{formData.medications || 'N/A'}</p>
           </div>
 
-          <div className="mt-6 text-center text-sm text-gray-500 print:hidden">
+          <div className="mt-6 text-center text-sm text-gray-500 no-print">
             <p>This is a preview. Click "Print Prescription" to print.</p>
           </div>
         </div>
@@ -836,6 +838,7 @@ function PrescriptionForm() {
     </div>
   );
 }
+
 
 // UserManagement Component (Admin only)
 function UserManagement() {
@@ -1161,21 +1164,55 @@ function BillHistory() {
         <head>
           <title>Print Bill</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            .bill { max-width: 600px; margin: auto; }
-            .bill h2 { text-align: center; }
-            .bill .flex { display: flex; justify-content: space-between; }
-            .bill .total { font-weight: bold; border-top: 1px solid #ccc; padding-top: 10px; }
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+              color: black;
+              background: white;
+            }
+            .bill {
+              max-width: 600px;
+              margin: auto;
+              padding: 20px;
+              border: 1px solid #ccc;
+            }
+            .bill h2 {
+              text-align: center;
+              font-size: 18pt;
+              margin-bottom: 10px;
+            }
+            .bill .flex {
+              display: flex;
+              justify-content: space-between;
+              font-size: 12pt;
+            }
+            .bill .total {
+              font-weight: bold;
+              border-top: 1px solid #000;
+              padding-top: 10px;
+              margin-top: 10px;
+            }
+            .bill .footer {
+              margin-top: 30px;
+              text-align: right;
+              font-size: 12pt;
+            }
             @media print {
-              body * { visibility: hidden; }
-              .print-area, .print-area * { visibility: visible; }
+              body * {
+                visibility: hidden;
+              }
+              .print-area, .print-area * {
+                visibility: visible;
+              }
               .print-area {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
-                background: white;
                 padding: 20px;
+                font-size: 12pt;
+                background: white;
+                color: black;
               }
             }
           </style>
@@ -1212,7 +1249,10 @@ function BillHistory() {
                 <span>₹${bill.balance}</span>
               </div>
             </div>
-            <p class="mt-4">This is a printable bill.</p>
+            <div class="footer">
+              <p>Signature: _______________________</p>
+              <p>Thank you for visiting Orthonova Clinic</p>
+            </div>
             <script>window.print();</script>
           </div>
         </body>
@@ -1251,7 +1291,7 @@ function BillHistory() {
                   <button
                     type="button"
                     onClick={() => handlePrintBill(bill)}
-                    className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-800 no-print"
                   >
                     Print Bill
                   </button>
