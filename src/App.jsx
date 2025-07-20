@@ -1009,13 +1009,12 @@ function Login({ onLogin }) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setError('');
-    setError('');
 
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password,
     });
+
     if (signInError) {
       setError('Login failed. Please check your credentials.');
       return;
@@ -1343,23 +1342,23 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-        {session ? (
-          <>
-            <PatientRegistration />
-            <DoctorRegistration />
-            <ServiceCatalog />
-            <BillingPage />
-            {hasRole('doctor') && <PrescriptionForm />}
-            {hasRole('admin') && <UserManagement />}
-            <BillHistory />
-          </>
-        ) : (
-          <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
-            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
-            <Login onLogin={handleLogin} />
-          </div>
-        )}
-      </main>
+  {session ? (
+    <>
+      <PatientRegistration />
+      <DoctorRegistration />
+      <ServiceCatalog />
+      <BillingPage />
+      {hasRole('doctor') && <PrescriptionForm />}
+      {hasRole('admin') && <UserManagement />}
+      <BillHistory />
+    </>
+  ) : (
+    <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
+      <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
+      <Login onLogin={() => setSession(true)} />
+    </div>
+  )}
+</main>
 
       {/* Footer */}
       <footer className="bg-white shadow-inner py-4">
