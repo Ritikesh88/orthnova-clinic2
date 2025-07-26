@@ -1147,34 +1147,39 @@ function Login({ onLogin }) {
   const user = JSON.parse(localStorage.getItem('user'));
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md mx-auto transform hover:scale-105 transition duration-200">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
+        <p className="text-gray-600">Sign in to your account</p>
+      </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
       {!user ? (
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700">User ID</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">User ID</label>
             <input
               name="userId"
               value={formData.userId}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
               placeholder="RECEPTION, ADMIN, DOC001"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
             <input
               name="password"
               type="password"
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
               placeholder="••••••••"
             />
           </div>
@@ -1182,24 +1187,24 @@ function Login({ onLogin }) {
           <div>
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
+              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
             >
               Login
             </button>
           </div>
         </form>
       ) : (
-        <div>
-          <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">
-            <p>Logged in as:</p>
-            <p className="font-medium">{user.user_id}</p>
+        <div className="text-center">
+          <div className="mb-5 p-4 bg-gradient-to-r from-green-50 to-emerald-50 text-green-800 rounded-xl border border-green-200">
+            <p className="text-sm font-medium">Logged in as:</p>
+            <p className="text-lg font-bold">{user.user_id}</p>
             <p className="text-sm text-gray-600">Role: {user.role}</p>
           </div>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-md transition duration-200"
           >
             Logout
           </button>
@@ -1498,69 +1503,72 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Orthonova Clinic</h1>
-            <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
-          </div>
-          <div className="w-64 text-right">
-            {session ? (
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-600 hover:text-red-800"
-              >
-                Logout
-              </button>
-            ) : (
-              <Login onLogin={handleLogin} />
-            )}
-          </div>
-        </div>
-      </header>
+      <header className="bg-white shadow-lg border-b border-gray-200">
+  <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+    <div className="text-center sm:text-left">
+      <h1 className="text-3xl font-extrabold text-gray-900">Orthonova Clinic</h1>
+      <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
+    </div>
+    <div className="w-64 text-center sm:text-right">
+      {session ? (
+        <button
+          onClick={handleLogout}
+          className="text-sm text-red-600 hover:text-red-800 font-medium transition duration-200 hover:underline"
+        >
+          Logout
+        </button>
+      ) : (
+        <Login onLogin={handleLogin} />
+      )}
+    </div>
+  </div>
+</header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {session ? (
-          <div>
-            {/* Admin Tabs */}
-            {hasRole('admin') && (
-              <>
-                <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {activeTab === 'createUser' && <UserManagement />}
-                  {activeTab === 'doctorRegistration' && <DoctorRegistration />}
-                  {activeTab === 'addService' && <ServiceCatalog />}
-                  {activeTab === 'billHistory' && <BillHistory />}
-                </div>
-              </>
-            )}
-
-            {/* Receptionist View */}
-              {hasRole('receptionist') && (
-            <>
-             <ReceptionistTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {activeTab === 'PatientRegistration' && <PatientRegistration />}
-                  {activeTab === 'BillingPage' && <BillingPage />}
-                  {activeTab === 'PrescriptionForm' && <PrescriptionForm />}
-                </div>
+  {session ? (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Receptionist View */}
+      {hasRole('receptionist') && (
+        <>
+          <ReceptionistTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="md:col-span-3 space-y-6">
+            {activeTab === 'PatientRegistration' && <PatientRegistration />}
+            {activeTab === 'BillingPage' && <BillingPage />}
+            {activeTab === 'PrescriptionForm' && <PrescriptionForm />}
+          </div>
         </>
       )}
 
-            {/* Doctor View */}
-            {hasRole('doctor') && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <PrescriptionForm />
-                </div>
-            )}
+      {/* Admin View */}
+      {hasRole('admin') && (
+        <>
+          <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+          <div className="md:col-span-3 space-y-6">
+            {activeTab === 'createUser' && <UserManagement />}
+            {activeTab === 'doctorRegistration' && <DoctorRegistration />}
+            {activeTab === 'addService' && <ServiceCatalog />}
+            {activeTab === 'billHistory' && <BillHistory />}
           </div>
-        ) : (
-          <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
-            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
-          </div>
-        )}
-      </main>
+        </>
+      )}
+
+      {/* Doctor View */}
+      {hasRole('doctor') && (
+        <div className="md:col-span-3 space-y-6">
+          <PrescriptionForm />
+          <BillHistory />
+        </div>
+      )}
+    </div>
+  ) : (
+    <div className="col-span-3 text-center py-20 bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg">
+      <h3 className="text-2xl font-bold text-gray-800 mb-2">Orthonova Clinic</h3>
+      <p className="text-lg text-gray-600 mb-6">Patient, Doctor, Services & Billing System</p>
+      <Login onLogin={handleLogin} />
+    </div>
+  )}
+</main>
 
       {/* Footer */}
       <footer className="bg-white shadow-inner py-4">
