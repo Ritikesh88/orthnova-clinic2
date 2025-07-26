@@ -1441,7 +1441,7 @@ export default function App() {
           </div>
         ) : (
           <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
-            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
+            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic systems</p>
             <Login onLogin={handleLogin} />
           </div>
         )}
