@@ -800,30 +800,6 @@ function PrescriptionForm() {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
-          <textarea
-            name="diagnosis"
-            value={formData.diagnosis}
-            onChange={handleChange}
-            rows="3"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter diagnosis"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Medications</label>
-          <textarea
-            name="medications"
-            value={formData.medications}
-            onChange={handleChange}
-            rows="4"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter medications"
-          />
-        </div>
-
         <div className="flex justify-between space-x-3">
           <button
             type="submit"
