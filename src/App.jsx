@@ -14,10 +14,7 @@ const calculateAge = (dob) => {
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-  ) {
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
     age--;
   }
   return age;
@@ -679,8 +676,6 @@ function PrescriptionForm() {
   });
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchPatients();
@@ -716,7 +711,6 @@ function PrescriptionForm() {
   const handlePrint = () => {
     window.print();
   };
-
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
@@ -844,10 +838,10 @@ function PrescriptionForm() {
   );
 }
 
-// UserManagement Component (Admin Only)
+// UserManagement Component (Admin only)
 function UserManagement() {
   const [formData, setFormData] = useState({
-    email: '',
+    userId: '',
     password: '',
     role: '',
     department: '',
@@ -877,42 +871,40 @@ function UserManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password || !formData.role || !formData.department) {
+    if (!formData.userId || !formData.password || !formData.role || !formData.department) {
       setError('All fields are required.');
       return;
     }
 
     // Prevent multiple receptionists
-    if (formData.role === 'receptionist' && users.some(u => u.role === 'receptionist')) {
-      setError('Only one receptionist is allowed.');
-      return;
+    if (formData.role === 'receptionist') {
+      const { data } = await supabase
+        .from('users')
+        .select()
+        .eq('role', 'receptionist')
+        .single();
+
+      if (data) {
+        setError('Only one Receptionist is allowed.');
+        return;
+      }
     }
 
-    const { error } = await supabase.auth.admin.createUser({
-      email: formData.email,
+    const { error } = await supabase.from('users').insert({
+      user_id: formData.userId,
       password: formData.password,
-      email_confirm: true,
-    });
-
-    if (error) {
-      setError('Failed to create user.');
-      return;
-    }
-
-    const { error: dbError } = await supabase.from('users').insert({
-      email: formData.email,
       role: formData.role,
       department: formData.department,
     });
 
-    if (dbError) {
-      setError('Failed to save user details.');
+    if (error) {
+      setError('Failed to add user.');
       return;
     }
 
     setSuccess('User created successfully!');
     setFormData({
-      email: '',
+      userId: '',
       password: '',
       role: '',
       department: '',
@@ -922,15 +914,15 @@ function UserManagement() {
   };
 
   const handleChangePassword = async () => {
-    if (!formData.email || !formData.password) {
-      setError('Email and new password are required.');
+    if (!formData.userId || !formData.password) {
+      setError('User ID and new password are required.');
       return;
     }
 
-    const { error } = await supabase.auth.admin.updateUserById(
-      users.find(u => u.email === formData.email)?.id,
-      { password: formData.password }
-    );
+    const { error } = await supabase
+      .from('users')
+      .update({ password: formData.password })
+      .eq('user_id', formData.userId);
 
     if (error) {
       setError('Failed to change password.');
@@ -939,7 +931,6 @@ function UserManagement() {
 
     setSuccess('Password changed successfully.');
   };
-
 
   if (!hasRole('admin')) {
     return (
@@ -963,14 +954,13 @@ function UserManagement() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-sm font-medium text-gray-700">User ID</label>
           <input
-            name="email"
-            type="email"
-            value={formData.email}
+            name="userId"
+            value={formData.userId}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="user@orthnova.com"
+            placeholder="RECEPTION, ADMIN, DOC001"
           />
         </div>
 
@@ -1026,11 +1016,10 @@ function UserManagement() {
         <h3 className="text-lg font-semibold mb-2">Change Password</h3>
         <div className="space-y-2">
           <input
-            name="email"
-            type="email"
-            value={formData.email}
+            name="userId"
+            value={formData.userId}
             onChange={handleChange}
-            placeholder="Enter email"
+            placeholder="Enter User ID"
             className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
           <input
@@ -1056,7 +1045,7 @@ function UserManagement() {
         <ul className="space-y-2">
           {users.map((user, index) => (
             <li key={index} className="p-3 border border-gray-200 rounded-md bg-gray-50 text-sm">
-              <p><strong>{user.email}</strong> ({user.role})</p>
+              <p><strong>{user.user_id}</strong> ({user.role})</p>
               <p className="text-gray-600">Department: {user.department}</p>
             </li>
           ))}
@@ -1069,10 +1058,9 @@ function UserManagement() {
 // Login Component
 function Login({ onLogin }) {
   const [formData, setFormData] = useState({
-    email: '',
+    userId: '',
     password: '',
   });
-  const [user, setUser] = useState(null);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -1080,49 +1068,36 @@ function Login({ onLogin }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSignIn = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (signInError) {
-      setError('Login failed. Please check your credentials.');
-      return;
-    }
-
-    const { data, error: userError } = await supabase.auth.getUser();
-    if (userError) {
-      setError('Failed to load user data.');
-      return;
-    }
-
-    const userEmail = data.user.email;
-
-    const {  userData, error: dbError } = await supabase
+    const { data, error } = await supabase
       .from('users')
       .select()
-      .eq('email', userEmail)
+      .eq('user_id', formData.userId)
       .single();
 
-    if (dbError) {
-      setError('You are not registered in the system.');
+    if (error || !data) {
+      setError('Invalid User ID');
       return;
     }
 
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    onLogin && onLogin(userData);
+    if (data.password !== formData.password) {
+      setError('Invalid Password');
+      return;
+    }
+
+    localStorage.setItem('user', JSON.stringify(data));
+    onLogin && onLogin(data);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
     localStorage.removeItem('user');
-    setUser(null);
     onLogin && onLogin(null);
   };
+
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
@@ -1133,16 +1108,15 @@ function Login({ onLogin }) {
       )}
 
       {!user ? (
-        <form onSubmit={handleSignIn} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700">User ID</label>
             <input
-              name="email"
-              type="email"
-              value={formData.email}
+              name="userId"
+              value={formData.userId}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="user@orthnova.com"
+              placeholder="RECEPTION, ADMIN, DOC001"
             />
           </div>
 
@@ -1163,7 +1137,7 @@ function Login({ onLogin }) {
               type="submit"
               className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
             >
-              Sign In
+              Login
             </button>
           </div>
         </form>
@@ -1171,7 +1145,7 @@ function Login({ onLogin }) {
         <div>
           <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">
             <p>Logged in as:</p>
-            <p className="font-medium">{user.name || user.email}</p>
+            <p className="font-medium">{user.user_id}</p>
             <p className="text-sm text-gray-600">Role: {user.role}</p>
           </div>
 
@@ -1341,48 +1315,20 @@ export default function App() {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        const { error } = await supabase
-          .from('users')
-          .select()
-          .eq('email', data.session.user.email)
-          .single();
-        if (error) {
-          setSession(true);
-          return;
-        }
-        setSession(true);
-      } else {
-        setSession(false);
-      }
-    };
-
-    checkSession();
-
-    const { subscription } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        checkSession();
-      } else if (event === 'SIGNED_OUT') {
-        setSession(false);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setSession(true);
+    }
   }, []);
 
   const handleLogin = () => {
     setSession(true);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem('user');
     setSession(false);
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -1392,6 +1338,18 @@ export default function App() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Orthonova Clinic</h1>
             <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
+          </div>
+          <div className="w-64">
+            {session ? (
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-600 hover:text-red-800"
+              >
+                Logout
+              </button>
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
           </div>
         </div>
       </header>
