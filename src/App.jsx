@@ -1423,13 +1423,13 @@ export default function App() {
             )}
 
             {/* Receptionist View */}
-            {hasRole('receptionist') && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <PatientRegistration />
-                <BillingPage />
-                <PrescriptionForm />
-              </div>
-            )}
+              {hasRole('receptionist') && (
+            <>
+            <PatientRegistration />
+          <BillingPage />
+          <PrescriptionForm />
+        </>
+      )}
 
             {/* Doctor View */}
             {hasRole('doctor') && (
