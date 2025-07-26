@@ -1370,11 +1370,7 @@ export default function App() {
     }
   }, []);
 
-  const handleLogin = () => {
-    setSession(true);
-  };
-
-  const handleLogout = () => {
+    const handleLogout = () => {
     localStorage.removeItem('user');
     setSession(false);
   };
