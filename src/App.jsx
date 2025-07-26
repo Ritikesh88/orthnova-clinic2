@@ -1126,48 +1126,6 @@ function UserManagement() {
 
 // Login Component
 function Login({ onLogin }) {
-  const [formData, setFormData] = useState({
-    userId: '',
-    password: '',
-  });
-  const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError('');
-
-    const { data, error } = await supabase
-      .from('users')
-      .select()
-      .eq('user_id', formData.userId)
-      .single();
-
-    if (error || !data) {
-      setError('Invalid User ID');
-      return;
-    }
-
-    if (data.password !== formData.password) {
-      setError('Invalid Password');
-      return;
-    }
-
-    localStorage.setItem('user', JSON.stringify(data));
-    onLogin && onLogin(data);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    onLogin && onLogin(null);
-  };
-
-  const user = JSON.parse(localStorage.getItem('user'));
-
   return (
     <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md mx-auto transform hover:scale-105 transition duration-200">
       <div className="text-center mb-6">
@@ -1209,7 +1167,7 @@ function Login({ onLogin }) {
           <div>
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
+              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
             >
               Login
             </button>
