@@ -667,7 +667,6 @@ function BillingPage() {
 }
 
 // PrescriptionForm Component
-// PrescriptionForm Component
 function PrescriptionForm() {
   const [formData, setFormData] = useState({
     patientId: '',
