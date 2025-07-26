@@ -841,7 +841,7 @@ function PrescriptionForm() {
 // UserManagement Component (Admin only)
 function UserManagement() {
   const [formData, setFormData] = useState({
-    userId: '',
+    email: '',
     password: '',
     role: '',
     department: '',
@@ -871,27 +871,13 @@ function UserManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.userId || !formData.password || !formData.role || !formData.department) {
+    if (!formData.email || !formData.password || !formData.role || !formData.department) {
       setError('All fields are required.');
       return;
     }
 
-    // Prevent multiple receptionists
-    if (formData.role === 'receptionist') {
-      const { data } = await supabase
-        .from('users')
-        .select()
-        .eq('role', 'receptionist')
-        .single();
-
-      if (data) {
-        setError('Only one Receptionist is allowed.');
-        return;
-      }
-    }
-
     const { error } = await supabase.from('users').insert({
-      user_id: formData.userId,
+      email: formData.email,
       password: formData.password,
       role: formData.role,
       department: formData.department,
@@ -902,34 +888,15 @@ function UserManagement() {
       return;
     }
 
-    setSuccess('User created successfully!');
+    setSuccess('User added successfully!');
     setFormData({
-      userId: '',
+      email: '',
       password: '',
       role: '',
       department: '',
     });
 
     fetchUsers();
-  };
-
-  const handleChangePassword = async () => {
-    if (!formData.userId || !formData.password) {
-      setError('User ID and new password are required.');
-      return;
-    }
-
-    const { error } = await supabase
-      .from('users')
-      .update({ password: formData.password })
-      .eq('user_id', formData.userId);
-
-    if (error) {
-      setError('Failed to change password.');
-      return;
-    }
-
-    setSuccess('Password changed successfully.');
   };
 
   if (!hasRole('admin')) {
@@ -954,13 +921,14 @@ function UserManagement() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">User ID</label>
+          <label className="block text-sm font-medium text-gray-700">Email</label>
           <input
-            name="userId"
-            value={formData.userId}
+            name="email"
+            type="email"
+            value={formData.email}
             onChange={handleChange}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            placeholder="RECEPTION, ADMIN, DOC001"
+            placeholder="user@orthnova.com"
           />
         </div>
 
@@ -1013,39 +981,11 @@ function UserManagement() {
       </form>
 
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Change Password</h3>
-        <div className="space-y-2">
-          <input
-            name="userId"
-            value={formData.userId}
-            onChange={handleChange}
-            placeholder="Enter User ID"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          />
-          <input
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="New password"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          />
-          <button
-            type="button"
-            onClick={handleChangePassword}
-            className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md transition duration-200"
-          >
-            Change Password
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2">Registered Users</h3>
         <ul className="space-y-2">
           {users.map((user, index) => (
             <li key={index} className="p-3 border border-gray-200 rounded-md bg-gray-50 text-sm">
-              <p><strong>{user.user_id}</strong> ({user.role})</p>
+              <p><strong>{user.email}</strong> ({user.role})</p>
               <p className="text-gray-600">Department: {user.department}</p>
             </li>
           ))}
@@ -1058,9 +998,10 @@ function UserManagement() {
 // Login Component
 function Login({ onLogin }) {
   const [formData, setFormData] = useState({
-    userId: '',
+    email: '',
     password: '',
   });
+  const [user, setUser] = useState(null);
   const [error, setError] = useState('');
 
   const handleChange = (e) => {
@@ -1068,36 +1009,49 @@ function Login({ onLogin }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    setError('');
 
-    const { data, error } = await supabase
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (signInError) {
+      setError('Login failed. Please check your credentials.');
+      return;
+    }
+
+    const { data, error: userError } = await supabase.auth.getUser();
+    if (userError) {
+      setError('Failed to load user data.');
+      return;
+    }
+
+    const userEmail = data.user.email;
+
+    const {  userData, error: dbError } = await supabase
       .from('users')
       .select()
-      .eq('user_id', formData.userId)
+      .eq('email', userEmail)
       .single();
 
-    if (error || !data) {
-      setError('Invalid User ID');
+    if (dbError) {
+      setError('You are not registered in the system.');
       return;
     }
 
-    if (data.password !== formData.password) {
-      setError('Invalid Password');
-      return;
-    }
-
-    localStorage.setItem('user', JSON.stringify(data));
-    onLogin && onLogin(data);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setUser(userData);
+    onLogin && onLogin(userData);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem('user');
+    setUser(null);
     onLogin && onLogin(null);
   };
-
-  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div className="bg-white p-6 rounded-lg shadow">
@@ -1108,15 +1062,16 @@ function Login({ onLogin }) {
       )}
 
       {!user ? (
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSignIn} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">User ID</label>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
-              name="userId"
-              value={formData.userId}
+              name="email"
+              type="email"
+              value={formData.email}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="RECEPTION, ADMIN, DOC001"
+              placeholder="user@orthnova.com"
             />
           </div>
 
@@ -1137,7 +1092,7 @@ function Login({ onLogin }) {
               type="submit"
               className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
             >
-              Login
+              Sign In
             </button>
           </div>
         </form>
@@ -1145,7 +1100,7 @@ function Login({ onLogin }) {
         <div>
           <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">
             <p>Logged in as:</p>
-            <p className="font-medium">{user.user_id}</p>
+            <p className="font-medium">{user.name || user.email}</p>
             <p className="text-sm text-gray-600">Role: {user.role}</p>
           </div>
 
@@ -1310,25 +1265,102 @@ function BillHistory() {
   );
 }
 
+// Tab Component for Admin
+function AdminTabs({ activeTab, setActiveTab }) {
+  return (
+    <div className="flex space-x-2 mb-6 border-b border-gray-300">
+      <button
+        onClick={() => setActiveTab('createUser')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'createUser'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Create User
+      </button>
+      <button
+        onClick={() => setActiveTab('doctorRegistration')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'doctorRegistration'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Doctor Registration
+      </button>
+      <button
+        onClick={() => setActiveTab('addService')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'addService'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Add Service
+      </button>
+      <button
+        onClick={() => setActiveTab('billHistory')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'billHistory'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Bill History
+      </button>
+    </div>
+  );
+}
+
 // Main App Component
 export default function App() {
   const [session, setSession] = useState(null);
+  const [activeTab, setActiveTab] = useState('createUser'); // For Admin tabs
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setSession(true);
-    }
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        const { error } = await supabase
+          .from('users')
+          .select()
+          .eq('email', data.session.user.email)
+          .single();
+        if (error) {
+          setSession(true);
+          return;
+        }
+        setSession(true);
+      } else {
+        setSession(false);
+      }
+    };
+    checkSession();
+
+    const { subscription } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        checkSession();
+      } else if (event === 'SIGNED_OUT') {
+        setSession(false);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogin = () => {
     setSession(true);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     setSession(false);
   };
+
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -1339,33 +1371,55 @@ export default function App() {
             <h1 className="text-3xl font-bold text-gray-900">Orthonova Clinic</h1>
             <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
           </div>
+          <div className="w-64 text-right">
+            {session ? (
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-600 hover:text-red-800"
+              >
+                Logout
+              </button>
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {session ? (
-          <>
-            {hasRole('receptionist') && (
+          <div>
+            {/* Admin Tabs */}
+            {hasRole('admin') && (
               <>
+                <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {activeTab === 'createUser' && <UserManagement />}
+                  {activeTab === 'doctorRegistration' && <DoctorRegistration />}
+                  {activeTab === 'addService' && <ServiceCatalog />}
+                  {activeTab === 'billHistory' && <BillHistory />}
+                </div>
+              </>
+            )}
+
+            {/* Receptionist View */}
+            {hasRole('receptionist') && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <PatientRegistration />
                 <BillingPage />
                 <PrescriptionForm />
-              </>
+              </div>
             )}
 
-            {hasRole('admin') && (
-              <>
-                <UserManagement />
-                <PatientRegistration />
-                <DoctorRegistration />
-                <ServiceCatalog />
+            {/* Doctor View */}
+            {hasRole('doctor') && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <PrescriptionForm />
                 <BillHistory />
-              </>
+              </div>
             )}
-
-            {hasRole('doctor') && <PrescriptionForm />}
-          </>
+          </div>
         ) : (
           <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
             <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
