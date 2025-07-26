@@ -1407,42 +1407,45 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-  {session ? (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Receptionist View */}
-      {hasRole('receptionist') && (
-        <>
-          <PatientRegistration />
-          <BillingPage />
-          <PrescriptionForm />
-        </>
-      )}
+        {session ? (
+          <div>
+            {/* Admin Tabs */}
+            {hasRole('admin') && (
+              <>
+                <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {activeTab === 'createUser' && <UserManagement />}
+                  {activeTab === 'doctorRegistration' && <DoctorRegistration />}
+                  {activeTab === 'addService' && <ServiceCatalog />}
+                  {activeTab === 'billHistory' && <BillHistory />}
+                </div>
+              </>
+            )}
 
-      {/* Admin View */}
-      {hasRole('admin') && (
-        <>
-          <UserManagement />
-          <DoctorRegistration />
-          <ServiceCatalog />
-          <BillHistory />
-        </>
-      )}
+            {/* Receptionist View */}
+            {hasRole('receptionist') && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <PatientRegistration />
+                <BillingPage />
+                <PrescriptionForm />
+              </div>
+            )}
 
-      {/* Doctor View */}
-      {hasRole('doctor') && (
-        <>
-          <PrescriptionForm />
-          <BillHistory />
-        </>
-      )}
-    </div>
-  ) : (
-    <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
-      <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
-      <Login onLogin={handleLogin} />
-    </div>
-  )}
-</main>
+            {/* Doctor View */}
+            {hasRole('doctor') && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <PrescriptionForm />
+                <BillHistory />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="col-span-3 text-center py-16 bg-white rounded-lg shadow">
+            <p className="text-lg text-gray-700 mb-4">Please log in to access the clinic system</p>
+            <Login onLogin={handleLogin} />
+          </div>
+        )}
+      </main>
 
       {/* Footer */}
       <footer className="bg-white shadow-inner py-4">
