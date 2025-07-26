@@ -1393,18 +1393,6 @@ export default function App() {
             <h1 className="text-3xl font-bold text-gray-900">Orthonova Clinic</h1>
             <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
           </div>
-          <div className="w-64">
-            {session ? (
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-600 hover:text-red-800"
-              >
-                Logout
-              </button>
-            ) : (
-              <Login onLogin={handleLogin} />
-            )}
-          </div>
         </div>
       </header>
 
