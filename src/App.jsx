@@ -1425,9 +1425,12 @@ export default function App() {
             {/* Receptionist View */}
               {hasRole('receptionist') && (
             <>
-            <PatientRegistration />
-          <BillingPage />
-          <PrescriptionForm />
+             <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {activeTab === 'New Patient Registration' && <PatientRegistration />}
+                  {activeTab === 'Billing' && <BillingPage />}
+                  {activeTab === 'Prescriptions' && <PrescriptionForm />}
+                </div>
         </>
       )}
 
