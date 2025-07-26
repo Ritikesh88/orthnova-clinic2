@@ -99,57 +99,61 @@ function PatientRegistration() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Patient Registration</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Patient Registration</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
+        <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200">
+          {success}
+        </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Full Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
           <input
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="John Doe"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
           <input
             name="dob"
             type="date"
             value={formData.dob}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Age (Auto-calculated)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Age (Auto-calculated)</label>
           <input
             type="text"
             value={formData.dob ? calculateAge(formData.dob) : ''}
             readOnly
-            className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Gender</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
           <select
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           >
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
@@ -159,24 +163,24 @@ function PatientRegistration() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Contact Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
           <input
             name="contactNumber"
             value={formData.contactNumber}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="9876543210"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Address</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
           <textarea
             name="address"
             value={formData.address}
             onChange={handleChange}
             rows="3"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="Enter full address"
           />
         </div>
@@ -184,7 +188,7 @@ function PatientRegistration() {
         <div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
           >
             Register Patient
           </button>
@@ -253,59 +257,63 @@ function DoctorRegistration() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Doctor Registration</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Doctor Registration</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
+        <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200">
+          {success}
+        </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Full Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
           <input
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="Dr. John Doe"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Contact Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
           <input
             name="contactNumber"
             value={formData.contactNumber}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="9876543210"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Registration Number</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Registration Number</label>
           <input
             name="registrationNumber"
             value={formData.registrationNumber}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="REG123456"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">OPD Fees (INR)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">OPD Fees (INR)</label>
           <input
             name="opdFees"
             type="number"
             value={formData.opdFees}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="e.g. 500"
           />
         </div>
@@ -313,7 +321,7 @@ function DoctorRegistration() {
         <div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
           >
             Register Doctor
           </button>
@@ -387,36 +395,40 @@ function ServiceCatalog() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Add Service</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Add Service</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
+        <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200">
+          {success}
+        </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Service Name</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Service Name</label>
           <input
             name="serviceName"
             value={formData.serviceName}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="e.g. X-Ray Hand"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Service Type</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Service Type</label>
           <select
             name="serviceType"
             value={formData.serviceType}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           >
             <option value="">Select Type</option>
             <option value="Consultation">Consultation</option>
@@ -427,13 +439,13 @@ function ServiceCatalog() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Price (INR)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Price (INR)</label>
           <input
             name="price"
             type="number"
             value={formData.price}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="e.g. 300"
           />
         </div>
@@ -441,7 +453,7 @@ function ServiceCatalog() {
         <div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
           >
             Add Service
           </button>
@@ -449,11 +461,11 @@ function ServiceCatalog() {
       </form>
 
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Available Services</h3>
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">Available Services</h3>
         <ul className="space-y-2">
           {services.length > 0 ? (
             services.map((service, index) => (
-              <li key={index} className="p-3 bg-gray-50 border border-gray-200 rounded-md text-sm">
+              <li key={index} className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm">
                 <strong>{service.service_name}</strong> - {service.service_type} (₹{service.price})
               </li>
             ))
@@ -565,25 +577,29 @@ function BillingPage() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Generate Bill</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Generate Bill</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
+        <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200">
+          {success}
+        </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Select Patient</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Patient</label>
           <select
             name="patientId"
             value={billData.patientId}
             onChange={(e) => setBillData({ ...billData, patientId: e.target.value })}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           >
             <option value="">Select Patient</option>
             {patients.map((patient) => (
@@ -595,17 +611,17 @@ function BillingPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Services</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Services</label>
           <div className="space-y-3 mt-2">
             {billData.services.map((item, index) => (
               <div key={index} className="flex items-end space-x-2">
                 <div className="flex-1">
-                  <label className="block text-xs text-gray-600">Service</label>
+                  <label className="block text-xs text-gray-600 mb-1">Service</label>
                   <select
                     name="serviceId"
                     value={item.serviceId}
                     onChange={(e) => handleServiceChange(e, index)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                   >
                     <option value="">Select Service</option>
                     {services.map((service) => (
@@ -617,21 +633,21 @@ function BillingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs text-gray-600">Qty</label>
+                  <label className="block text-xs text-gray-600 mb-1">Qty</label>
                   <input
                     name="quantity"
                     type="number"
                     min="1"
                     value={item.quantity}
                     onChange={(e) => handleServiceChange(e, index)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="w-20 px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
                   />
                 </div>
 
                 <button
                   type="button"
                   onClick={() => removeServiceRow(index)}
-                  className="text-red-600 hover:text-red-800"
+                  className="px-3 py-1 text-red-600 hover:text-red-800 font-medium"
                 >
                   Remove
                 </button>
@@ -642,7 +658,7 @@ function BillingPage() {
           <button
             type="button"
             onClick={addServiceRow}
-            className="mt-3 text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium"
           >
             + Add Another Service
           </button>
@@ -651,12 +667,12 @@ function BillingPage() {
         <div className="pt-2 border-t border-gray-200">
           <div className="flex justify-between items-center mb-2">
             <strong className="text-gray-700">Total Amount:</strong>
-            <span className="text-xl font-semibold text-gray-900">₹{calculateTotal()}</span>
+            <span className="text-2xl font-semibold text-gray-900">₹{calculateTotal()}</span>
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
           >
             Generate Bill
           </button>
@@ -681,7 +697,6 @@ function PrescriptionForm() {
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
-  // Fetch patients
   const fetchPatients = async () => {
     const { data, error } = await supabase.from('patients').select('*');
     if (error) {
@@ -691,7 +706,6 @@ function PrescriptionForm() {
     setPatients(data || []);
   };
 
-  // Fetch doctors
   const fetchDoctors = async () => {
     const { data, error } = await supabase.from('doctors').select('*');
     if (error) {
@@ -701,13 +715,11 @@ function PrescriptionForm() {
     setDoctors(data || []);
   };
 
-  // Load data on mount
   useEffect(() => {
     fetchPatients();
     fetchDoctors();
   }, []);
 
-  // Update patient & doctor data when selection changes
   useEffect(() => {
     if (formData.patientId) {
       const patient = patients.find(p => p.patient_id === formData.patientId);
@@ -733,7 +745,7 @@ function PrescriptionForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.patientId || !formData.doctorId ) {
+    if (!formData.patientId || !formData.doctorId) {
       setError('All fields are required.');
       return;
     }
@@ -746,25 +758,29 @@ function PrescriptionForm() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Generate Prescription</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Generate Prescription</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
+        <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200">
+          {success}
+        </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Select Patient</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Patient</label>
           <select
             name="patientId"
             value={formData.patientId}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           >
             <option value="">Select Patient</option>
             {patients.length > 0 ? (
@@ -780,12 +796,12 @@ function PrescriptionForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Select Doctor</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Doctor</label>
           <select
             name="doctorId"
             value={formData.doctorId}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           >
             <option value="">Select Doctor</option>
             {doctors.length > 0 ? (
@@ -803,14 +819,14 @@ function PrescriptionForm() {
         <div className="flex justify-between space-x-3">
           <button
             type="submit"
-            className="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
+            className="py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
           >
             Generate Prescription
           </button>
           <button
             type="button"
             onClick={handlePrint}
-            className="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition duration-200"
+            className="py-3 px-6 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold rounded-xl shadow-md transition duration-200"
           >
             Print Prescription
           </button>
@@ -819,7 +835,7 @@ function PrescriptionForm() {
 
       {/* Prescription Preview */}
       {formData.patientId && formData.doctorId && (
-        <div id="prescription-preview" className="print-area mt-6 border border-gray-300 rounded-md bg-white p-4 shadow-inner">
+        <div id="prescription-preview" className="print-area mt-6 border border-gray-300 rounded-lg bg-white p-6 shadow-inner">
           <style>
             {`
               @media print {
@@ -873,9 +889,11 @@ function PrescriptionForm() {
               <tr>
                 <td className="font-medium">Doctor:</td>
                 <td className="px-2" colSpan="2">{doctorData?.name || 'N/A'}</td>
+                <td className="text-right text-xs text-gray-500">(Valid for 7 days only)</td>
               </tr>
             </tbody>
           </table>
+
           <div className="mt-8 text-right no-print">
             <p className="text-sm text-gray-500">This is a preview. Click "Print Prescription" to print.</p>
           </div>
@@ -981,55 +999,59 @@ function UserManagement() {
 
   if (!hasRole('admin')) {
     return (
-      <div className="bg-white p-6 rounded-lg shadow text-center">
-        <p className="text-gray-600">Only admins can access this page.</p>
+      <div className="bg-white p-8 rounded-2xl shadow-xl text-center">
+        <p className="text-gray-600 text-lg">Only admins can access this page.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">User Management (Admin Only)</h2>
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Create User (Admin Only)</h2>
 
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded">{success}</div>
+        <div className="mb-4 p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200">
+          {success}
+        </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded">{error}</div>
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700">User ID</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">User ID</label>
           <input
             name="userId"
             value={formData.userId}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="RECEPTION, ADMIN, DOC001"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
           <input
             name="password"
             type="password"
             value={formData.password}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="Enter password"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Role</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Role</label>
           <select
             name="role"
             value={formData.role}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
           >
             <option value="">Select Role</option>
             <option value="admin">Admin</option>
@@ -1039,12 +1061,12 @@ function UserManagement() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Department</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
           <input
             name="department"
             value={formData.department}
             onChange={handleChange}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
             placeholder="Administration, Orthopedics, etc."
           />
         </div>
@@ -1052,7 +1074,7 @@ function UserManagement() {
         <div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
           >
             Add User
           </button>
@@ -1060,14 +1082,14 @@ function UserManagement() {
       </form>
 
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Change Password</h3>
-        <div className="space-y-2">
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">Change Password</h3>
+        <div className="space-y-3">
           <input
             name="userId"
             value={formData.userId}
             onChange={handleChange}
             placeholder="Enter User ID"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm"
           />
           <input
             name="password"
@@ -1075,12 +1097,12 @@ function UserManagement() {
             value={formData.password}
             onChange={handleChange}
             placeholder="New password"
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm"
           />
           <button
             type="button"
             onClick={handleChangePassword}
-            className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl shadow-md transition duration-200"
           >
             Change Password
           </button>
@@ -1088,10 +1110,10 @@ function UserManagement() {
       </div>
 
       <div className="mt-6">
-        <h3 className="text-lg font-semibold mb-2">Registered Users</h3>
+        <h3 className="text-lg font-semibold mb-3 text-gray-800">Registered Users</h3>
         <ul className="space-y-2">
           {users.map((user, index) => (
-            <li key={index} className="p-3 border border-gray-200 rounded-md bg-gray-50 text-sm">
+            <li key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50 text-sm">
               <p><strong>{user.user_id}</strong> ({user.role})</p>
               <p className="text-gray-600">Department: {user.department}</p>
             </li>
@@ -1241,10 +1263,7 @@ function BillHistory() {
             service_name,
             price
           ),
-          quantity,
-          amount,
-          discount,
-          final_amount
+          quantity
         )
       `);
 
@@ -1283,59 +1302,35 @@ function BillHistory() {
         </head>
         <body>
           <div class="print-area">
-            <h2>ORTHONOVA POLYCLINIC</h2>
-            <p>Redg No: SUN/00051/2024</p>
-            <p>Near Tarini Mandir, Panposh Road, Civil Township, Rourkela</p>
-            <hr />
-            <h3>INVOICE</h3>
-            <div class="flex justify-between items-start">
-              <div>
-                <p>Name: ${bill.patient.name}</p>
-                <p>Age: ${calculateAge(bill.patient.dob)}</p>
-                <p>Gender: ${bill.patient.gender}</p>
-                <p>Contact Number: ${bill.patient.contact_number}</p>
-                <p>Address: ${bill.patient.address}</p>
+            <h2>Orthonova Clinic</h2>
+            <p><strong>Bill Number:</strong> ${bill.bill_number}</p>
+            <p><strong>Patient ID:</strong> ${bill.patient_id}</p>
+            <p><strong>Date:</strong> ${new Date(bill.created_at).toLocaleDateString()}</p>
+            <hr class="my-4" />
+            <h3>Bill Details</h3>
+            <ul>
+              ${bill.bill_items
+                .map(
+                  (item) =>
+                    `<li>${item.service_id.service_name} (₹${item.service_id.price}) x ${item.quantity} = ₹${
+                      item.service_id.price * item.quantity
+                    }</li>`
+                )
+                .join('')}
+            </ul>
+            <div class="total">
+              <div class="flex">
+                <span>Total:</span>
+                <span>₹${bill.total_amount}</span>
               </div>
-              <div>
-                <p>Order No: ${bill.bill_number}</p>
-                <p>Date: ${new Date(bill.created_at).toLocaleDateString()}</p>
+              <div class="flex">
+                <span>Paid:</span>
+                <span>₹${bill.paid_amount}</span>
               </div>
-            </div>
-            <table class="w-full text-sm border-collapse">
-              <thead>
-                <tr>
-                  <th class="border px-2 py-1">Item Name</th>
-                  <th class="border px-2 py-1">Unit Price</th>
-                  <th class="border px-2 py-1">Quantity</th>
-                  <th class="border px-2 py-1">Amount</th>
-                  <th class="border px-2 py-1">Discount</th>
-                  <th class="border px-2 py-1">Final Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${bill.bill_items
-                  .map(
-                    (item) => `
-                      <tr>
-                        <td class="border px-2 py-1">${item.service_id.service_name}</td>
-                        <td class="border px-2 py-1">₹${item.service_id.price}</td>
-                        <td class="border px-2 py-1">${item.quantity}</td>
-                        <td class="border px-2 py-1">₹${item.amount}</td>
-                        <td class="border px-2 py-1">₹${item.discount || 0}</td>
-                        <td class="border px-2 py-1">₹${item.final_amount}</td>
-                      </tr>
-                    `
-                  )
-                  .join('')}
-              </tbody>
-            </table>
-            <div class="mt-6 space-y-3">
-              <p class="text-sm">Final Amount: ₹${bill.total_amount}</p>
-              <p class="text-sm">Payment Type: ${bill.status}</p>
-            </div>
-            <div class="mt-6 space-y-3">
-              <p class="text-sm">MOB NO: 7681004245</p>
-              <p class="text-sm">Email ID: info.orthonova@gmail.com</p>
+              <div class="flex">
+                <span>Balance:</span>
+                <span>₹${bill.balance}</span>
+              </div>
             </div>
             <script>window.print();</script>
           </div>
@@ -1346,26 +1341,25 @@ function BillHistory() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Bill History</h2>
-
+    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3 border-gray-200">Bill History</h2>
       <div className="mb-4">
         <input
           type="text"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search by Bill No. or Patient ID"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
         />
       </div>
       <div className="space-y-4">
         {bills.length > 0 ? (
           bills.map((bill, index) => (
-            <div key={index} className="p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div key={index} className="p-4 border border-gray-200 rounded-lg bg-gray-50">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm text-gray-600">Bill #: <strong>{bill.bill_number}</strong></p>
-                  <p className="text-sm text-gray-600">Patient: <strong>{bill.patient.name}</strong></p>
+                  <p className="text-sm text-gray-600">Bill #<strong>{bill.bill_number}</strong></p>
+                  <p className="text-sm text-gray-600">Patient: <strong>{bill.patient_id}</strong></p>
                   <p className="text-sm text-gray-600">Date: {new Date(bill.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
@@ -1374,7 +1368,7 @@ function BillHistory() {
                   <button
                     type="button"
                     onClick={() => handlePrintBill(bill)}
-                    className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                    className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
                   >
                     Print Bill
                   </button>
@@ -1393,47 +1387,25 @@ function BillHistory() {
 // Tab Component for Admin
 function AdminTabs({ activeTab, setActiveTab }) {
   return (
-    <div className="flex space-x-2 mb-6 border-b border-gray-300">
-      <button
-        onClick={() => setActiveTab('createUser')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'createUser'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        User Management
-      </button>
-      <button
-        onClick={() => setActiveTab('doctorRegistration')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'doctorRegistration'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        Doctor Registration
-      </button>
-      <button
-        onClick={() => setActiveTab('addService')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'addService'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        Add Service
-      </button>
-      <button
-        onClick={() => setActiveTab('billHistory')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'billHistory'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        Bill History
-      </button>
+    <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-8">
+      {[
+        { key: 'createUser', label: 'Create User' },
+        { key: 'doctorRegistration', label: 'Doctor Registration' },
+        { key: 'addService', label: 'Add Service' },
+        { key: 'billHistory', label: 'Bill History' },
+      ].map((tab) => (
+        <button
+          key={tab.key}
+          onClick={() => setActiveTab(tab.key)}
+          className={`py-3 px-6 text-sm font-medium rounded-lg transition duration-200 ${
+            activeTab === tab.key
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-gray-700 hover:text-blue-600'
+          }`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -1441,47 +1413,33 @@ function AdminTabs({ activeTab, setActiveTab }) {
 // Tab Component for Receptionist
 function ReceptionistTabs({ activeTab, setActiveTab }) {
   return (
-    <div className="flex space-x-2 mb-6 border-b border-gray-300">
-      <button
-        onClick={() => setActiveTab('PatientRegistration')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'PatientRegistration'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        New Patient Registration
-      </button>
-      <button
-        onClick={() => setActiveTab('BillingPage')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'BillingPage'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        Billing
-      </button>
-      <button
-        onClick={() => setActiveTab('PrescriptionForm')}
-        className={`py-2 px-4 text-sm font-medium border-b-2 ${
-          activeTab === 'PrescriptionForm'
-            ? 'border-blue-500 text-blue-600'
-            : 'border-transparent text-gray-500 hover:text-gray-700'
-        }`}
-      >
-        Prescription
-      </button>
+    <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-8">
+      {[
+        { key: 'PatientRegistration', label: 'Patient Registration' },
+        { key: 'BillingPage', label: 'Billing' },
+        { key: 'PrescriptionForm', label: 'Prescription' },
+      ].map((tab) => (
+        <button
+          key={tab.key}
+          onClick={() => setActiveTab(tab.key)}
+          className={`py-3 px-6 text-sm font-medium rounded-lg transition duration-200 ${
+            activeTab === tab.key
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-gray-700 hover:text-blue-600'
+          }`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 }
-
 
 // Main App Component
 export default function App() {
   const [session, setSession] = useState(null);
   const [activeTab, setActiveTab] = useState('createUser'); // For Admin tabs
- 
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
@@ -1504,71 +1462,71 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-gray-200">
-  <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-    <div className="text-center sm:text-left">
-      <h1 className="text-3xl font-extrabold text-gray-900">Orthonova Clinic</h1>
-      <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
-    </div>
-    <div className="w-64 text-center sm:text-right">
-      {session ? (
-        <button
-          onClick={handleLogout}
-          className="text-sm text-red-600 hover:text-red-800 font-medium transition duration-200 hover:underline"
-        >
-          Logout
-        </button>
-      ) : (
-        <Login onLogin={handleLogin} />
-      )}
-    </div>
-  </div>
-</header>
+        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+          <div className="text-center sm:text-left">
+            <h1 className="text-3xl font-extrabold text-gray-900">Orthonova Clinic</h1>
+            <p className="mt-1 text-sm text-gray-600">Patient, Doctor, Services & Billing</p>
+          </div>
+          <div className="w-64 text-center sm:text-right">
+            {session ? (
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-600 hover:text-red-800 font-medium transition duration-200 hover:underline"
+              >
+                Logout
+              </button>
+            ) : (
+              <Login onLogin={handleLogin} />
+            )}
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-  {session ? (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {/* Receptionist View */}
-      {hasRole('receptionist') && (
-        <>
-          <ReceptionistTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <div className="md:col-span-3 space-y-6">
-            {activeTab === 'PatientRegistration' && <PatientRegistration />}
-            {activeTab === 'BillingPage' && <BillingPage />}
-            {activeTab === 'PrescriptionForm' && <PrescriptionForm />}
-          </div>
-        </>
-      )}
+        {session ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Receptionist View */}
+            {hasRole('receptionist') && (
+              <>
+                <ReceptionistTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <div className="md:col-span-3 space-y-6">
+                  {activeTab === 'PatientRegistration' && <PatientRegistration />}
+                  {activeTab === 'BillingPage' && <BillingPage />}
+                  {activeTab === 'PrescriptionForm' && <PrescriptionForm />}
+                </div>
+              </>
+            )}
 
-      {/* Admin View */}
-      {hasRole('admin') && (
-        <>
-          <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <div className="md:col-span-3 space-y-6">
-            {activeTab === 'createUser' && <UserManagement />}
-            {activeTab === 'doctorRegistration' && <DoctorRegistration />}
-            {activeTab === 'addService' && <ServiceCatalog />}
-            {activeTab === 'billHistory' && <BillHistory />}
-          </div>
-        </>
-      )}
+            {/* Admin View */}
+            {hasRole('admin') && (
+              <>
+                <AdminTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <div className="md:col-span-3 space-y-6">
+                  {activeTab === 'createUser' && <UserManagement />}
+                  {activeTab === 'doctorRegistration' && <DoctorRegistration />}
+                  {activeTab === 'addService' && <ServiceCatalog />}
+                  {activeTab === 'billHistory' && <BillHistory />}
+                </div>
+              </>
+            )}
 
-      {/* Doctor View */}
-      {hasRole('doctor') && (
-        <div className="md:col-span-3 space-y-6">
-          <PrescriptionForm />
-          <BillHistory />
-        </div>
-      )}
-    </div>
-  ) : (
-    <div className="col-span-3 text-center py-20 bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg">
-      <h3 className="text-2xl font-bold text-gray-800 mb-2">Orthonova Clinic</h3>
-      <p className="text-lg text-gray-600 mb-6">Patient, Doctor, Services & Billing System</p>
-      <Login onLogin={handleLogin} />
-    </div>
-  )}
-</main>
+            {/* Doctor View */}
+            {hasRole('doctor') && (
+              <div className="md:col-span-3 space-y-6">
+                <PrescriptionForm />
+                <BillHistory />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="col-span-3 text-center py-20 bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Orthonova Clinic</h3>
+            <p className="text-lg text-gray-600 mb-6">Patient, Doctor, Services & Billing System</p>
+            <Login onLogin={handleLogin} />
+          </div>
+        )}
+      </main>
 
       {/* Footer */}
       <footer className="bg-white shadow-inner py-4">
