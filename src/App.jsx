@@ -873,7 +873,6 @@ function PrescriptionForm() {
               <tr>
                 <td className="font-medium">Doctor:</td>
                 <td className="px-2" colSpan="2">{doctorData?.name || 'N/A'}</td>
-                <td className="text-right text-xs text-gray-500">(Valid for 7 days only)</td>
               </tr>
             </tbody>
           </table>
