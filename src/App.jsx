@@ -667,6 +667,7 @@ function BillingPage() {
 }
 
 // PrescriptionForm Component
+// PrescriptionForm Component
 function PrescriptionForm() {
   const [formData, setFormData] = useState({
     patientId: '',
@@ -676,23 +677,34 @@ function PrescriptionForm() {
   });
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
 
+  // Fetch patients
+  const fetchPatients = async () => {
+    const { data, error } = await supabase.from('patients').select('patient_id, name');
+    if (error) {
+      console.error('Failed to load patients', error);
+      return;
+    }
+    setPatients(data || []);
+  };
+
+  // Fetch doctors
+  const fetchDoctors = async () => {
+    const { data, error } = await supabase.from('doctors').select('doctor_id, name');
+    if (error) {
+      console.error('Failed to load doctors', error);
+      return;
+    }
+    setDoctors(data || []);
+  };
+
+  // Load data on mount
   useEffect(() => {
     fetchPatients();
     fetchDoctors();
   }, []);
-
-  const fetchPatients = async () => {
-    const { data, error } = await supabase.from('patients').select('patient_id, name');
-    if (error) console.error('Failed to load patients', error);
-    else setPatients(data || []);
-  };
-
-  const fetchDoctors = async () => {
-    const { data, error } = await supabase.from('doctors').select('doctor_id, name');
-    if (error) console.error('Failed to load doctors', error);
-    else setDoctors(data || []);
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -706,6 +718,7 @@ function PrescriptionForm() {
       return;
     }
     setSuccess('Prescription generated successfully!');
+    setError('');
   };
 
   const handlePrint = () => {
@@ -734,11 +747,15 @@ function PrescriptionForm() {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select Patient</option>
-            {patients.map((patient) => (
-              <option key={patient.patient_id} value={patient.patient_id}>
-                {patient.name} ({patient.patient_id})
-              </option>
-            ))}
+            {patients.length > 0 ? (
+              patients.map((patient) => (
+                <option key={patient.patient_id} value={patient.patient_id}>
+                  {patient.name} ({patient.patient_id})
+                </option>
+              ))
+            ) : (
+              <option disabled>Loading patients...</option>
+            )}
           </select>
         </div>
 
@@ -751,11 +768,15 @@ function PrescriptionForm() {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select Doctor</option>
-            {doctors.map((doctor) => (
-              <option key={doctor.doctor_id} value={doctor.doctor_id}>
-                {doctor.name} ({doctor.doctor_id})
-              </option>
-            ))}
+            {doctors.length > 0 ? (
+              doctors.map((doctor) => (
+                <option key={doctor.doctor_id} value={doctor.doctor_id}>
+                  {doctor.name} ({doctor.doctor_id})
+                </option>
+              ))
+            ) : (
+              <option disabled>Loading doctors...</option>
+            )}
           </select>
         </div>
 
