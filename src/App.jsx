@@ -1467,8 +1467,8 @@ export default function App() {
              <ReceptionistTabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {activeTab === 'PatientRegistration' && <PatientRegistration />}
-                  {activeTab === 'Billing' && <BillingPage />}
-                  {activeTab === 'Prescriptions' && <PrescriptionForm />}
+                  {activeTab === 'BillingPage' && <BillingPage />}
+                  {activeTab === 'PrescriptionForm' && <PrescriptionForm />}
                 </div>
         </>
       )}
