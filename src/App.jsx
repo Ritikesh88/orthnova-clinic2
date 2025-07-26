@@ -676,12 +676,14 @@ function PrescriptionForm() {
   });
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [patientData, setPatientData] = useState(null);
+  const [doctorData, setDoctorData] = useState(null);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
 
   // Fetch patients
   const fetchPatients = async () => {
-    const { data, error } = await supabase.from('patients').select('patient_id, name');
+    const { data, error } = await supabase.from('patients').select('*');
     if (error) {
       console.error('Failed to load patients', error);
       return;
@@ -691,7 +693,7 @@ function PrescriptionForm() {
 
   // Fetch doctors
   const fetchDoctors = async () => {
-    const { data, error } = await supabase.from('doctors').select('doctor_id, name');
+    const { data, error } = await supabase.from('doctors').select('*');
     if (error) {
       console.error('Failed to load doctors', error);
       return;
@@ -704,6 +706,25 @@ function PrescriptionForm() {
     fetchPatients();
     fetchDoctors();
   }, []);
+
+  // Update patient & doctor data when selection changes
+  useEffect(() => {
+    if (formData.patientId) {
+      const patient = patients.find(p => p.patient_id === formData.patientId);
+      setPatientData(patient || null);
+    } else {
+      setPatientData(null);
+    }
+  }, [formData.patientId, patients]);
+
+  useEffect(() => {
+    if (formData.doctorId) {
+      const doctor = doctors.find(d => d.doctor_id === formData.doctorId);
+      setDoctorData(doctor || null);
+    } else {
+      setDoctorData(null);
+    }
+  }, [formData.doctorId, doctors]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -822,35 +843,79 @@ function PrescriptionForm() {
 
       {/* Prescription Preview */}
       {formData.patientId && formData.doctorId && (
-        <div id="prescription-preview" className="print-area mt-6 p-4 bg-white border border-gray-300 rounded-md shadow-inner">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-gray-800">Prescription</h3>
-            <p className="text-sm text-gray-600">Date: {new Date().toLocaleDateString()}</p>
-          </div>
+        <div id="prescription-preview" className="print-area mt-6 border border-gray-300 rounded-md bg-white p-4 shadow-inner">
+          <style>
+            {`
+              @media print {
+                body * {
+                  visibility: hidden;
+                }
+                .print-area, .print-area * {
+                  visibility: visible;
+                }
+                .print-area {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  border: none;
+                  padding: 20px;
+                }
+                .no-print {
+                  display: none;
+                }
+              }
+            `}
+          </style>
 
-          <div className="grid grid-cols-2 gap-4">
+          <table className="w-full text-sm border-collapse" style={{ fontFamily: 'Arial, sans-serif' }}>
+            <tbody>
+              <tr>
+                <td className="font-medium">Patient ID:</td>
+                <td className="px-2">{patientData?.patient_id || 'N/A'}</td>
+                <td className="text-right font-medium">Date:</td>
+                <td className="px-2">{new Date().toLocaleDateString()}</td>
+              </tr>
+              <tr>
+                <td className="font-medium">Name:</td>
+                <td className="px-2" colSpan="3">{patientData?.name || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td className="font-medium">Age:</td>
+                <td className="px-2">{patientData?.age || 'N/A'} YRs</td>
+                <td className="font-medium">Gender:</td>
+                <td className="px-2">{patientData?.gender || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td className="font-medium">Address:</td>
+                <td className="px-2" colSpan="3">{patientData?.address || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td className="font-medium">Mobile No:</td>
+                <td className="px-2" colSpan="3">{patientData?.contact_number || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td className="font-medium">Doctor:</td>
+                <td className="px-2" colSpan="2">{doctorData?.name || 'N/A'}</td>
+                <td className="text-right text-xs text-gray-500">(Valid for 7 days only)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="mt-6 space-y-3">
             <div>
-              <p className="text-sm text-gray-600">Patient ID:</p>
-              <p className="font-medium">{formData.patientId}</p>
+              <strong className="text-gray-700">Diagnosis:</strong>
+              <p className="ml-2 mt-1">{formData.diagnosis || 'N/A'}</p>
             </div>
+
             <div>
-              <p className="text-sm text-gray-600">Doctor ID:</p>
-              <p className="font-medium">{formData.doctorId}</p>
+              <strong className="text-gray-700">Medications:</strong>
+              <p className="ml-2 mt-1 whitespace-pre-line">{formData.medications || 'N/A'}</p>
             </div>
           </div>
 
-          <div className="mt-4">
-            <p className="text-sm text-gray-600">Diagnosis:</p>
-            <p className="font-medium">{formData.diagnosis || 'N/A'}</p>
-          </div>
-
-          <div className="mt-4">
-            <p className="text-sm text-gray-600">Medications:</p>
-            <p className="font-medium">{formData.medications || 'N/A'}</p>
-          </div>
-
-          <div className="mt-6 text-center text-sm text-gray-500 no-print">
-            <p>This is a preview. Click "Print Prescription" to print.</p>
+          <div className="mt-8 text-right no-print">
+            <p className="text-sm text-gray-500">This is a preview. Click "Print Prescription" to print.</p>
           </div>
         </div>
       )}
