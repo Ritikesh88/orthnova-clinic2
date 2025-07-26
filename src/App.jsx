@@ -1358,6 +1358,45 @@ function AdminTabs({ activeTab, setActiveTab }) {
   );
 }
 
+// Tab Component for Receptionist
+function receptionist({ activeTab, setActiveTab }) {
+  return (
+    <div className="flex space-x-2 mb-6 border-b border-gray-300">
+      <button
+        onClick={() => setActiveTab('PatientRegistration')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'PatientRegistration'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        New Patient Registration
+      </button>
+      <button
+        onClick={() => setActiveTab('BillingPage')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'BillingPage'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Billing
+      </button>
+      <button
+        onClick={() => setActiveTab('PrescriptionForm')}
+        className={`py-2 px-4 text-sm font-medium border-b-2 ${
+          activeTab === 'PrescriptionForm'
+            ? 'border-blue-500 text-blue-600'
+            : 'border-transparent text-gray-500 hover:text-gray-700'
+        }`}
+      >
+        Prescription
+      </button>
+    </div>
+  );
+}
+
+
 // Main App Component
 export default function App() {
   const [session, setSession] = useState(null);
@@ -1427,7 +1466,7 @@ export default function App() {
             <>
              <ReceptionistTabs activeTab={activeTab} setActiveTab={setActiveTab} />
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {activeTab === 'New Patient Registration' && <PatientRegistration />}
+                  {activeTab === 'NewPatientRegistration' && <PatientRegistration />}
                   {activeTab === 'Billing' && <BillingPage />}
                   {activeTab === 'Prescriptions' && <PrescriptionForm />}
                 </div>
