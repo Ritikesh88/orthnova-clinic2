@@ -901,19 +901,6 @@ function PrescriptionForm() {
               </tr>
             </tbody>
           </table>
-
-          <div className="mt-6 space-y-3">
-            <div>
-              <strong className="text-gray-700">Diagnosis:</strong>
-              <p className="ml-2 mt-1">{formData.diagnosis || 'N/A'}</p>
-            </div>
-
-            <div>
-              <strong className="text-gray-700">Medications:</strong>
-              <p className="ml-2 mt-1 whitespace-pre-line">{formData.medications || 'N/A'}</p>
-            </div>
-          </div>
-
           <div className="mt-8 text-right no-print">
             <p className="text-sm text-gray-500">This is a preview. Click "Print Prescription" to print.</p>
           </div>
