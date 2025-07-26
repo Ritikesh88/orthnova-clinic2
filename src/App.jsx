@@ -1421,7 +1421,7 @@ function ReceptionistTabs({ activeTab, setActiveTab }) {
 export default function App() {
   const [session, setSession] = useState(null);
   const [activeTab, setActiveTab] = useState('createUser'); // For Admin tabs
-
+ 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (user) {
