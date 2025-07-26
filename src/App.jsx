@@ -1126,6 +1126,48 @@ function UserManagement() {
 
 // Login Component
 function Login({ onLogin }) {
+  const [formData, setFormData] = useState({
+    userId: '',
+    password: '',
+  });
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    const { data, error } = await supabase
+      .from('users')
+      .select()
+      .eq('user_id', formData.userId)
+      .single();
+
+    if (error || !data) {
+      setError('Invalid User ID');
+      return;
+    }
+
+    if (data.password !== formData.password) {
+      setError('Invalid Password');
+      return;
+    }
+
+    localStorage.setItem('user', JSON.stringify(data));
+    onLogin && onLogin(data);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    onLogin && onLogin(null);
+  };
+
+  const user = JSON.parse(localStorage.getItem('user'));
+
   return (
     <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md mx-auto transform hover:scale-105 transition duration-200">
       <div className="text-center mb-6">
@@ -1167,7 +1209,7 @@ function Login({ onLogin }) {
           <div>
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
+              className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition duration-200 transform hover:scale-105"
             >
               Login
             </button>
@@ -1260,35 +1302,52 @@ function BillHistory() {
         </head>
         <body>
           <div class="print-area">
-            <h2>Orthonova Clinic</h2>
-            <p><strong>Bill Number:</strong> ${bill.bill_number}</p>
-            <p><strong>Patient ID:</strong> ${bill.patient_id}</p>
-            <p><strong>Date:</strong> ${new Date(bill.created_at).toLocaleDateString()}</p>
-            <hr class="my-4" />
-            <h3>Bill Details</h3>
-            <ul>
-              ${bill.bill_items
-                .map(
-                  (item) =>
-                    `<li>${item.service_id.service_name} (₹${item.service_id.price}) x ${item.quantity} = ₹${
-                      item.service_id.price * item.quantity
-                    }</li>`
-                )
-                .join('')}
-            </ul>
-            <div class="total">
-              <div class="flex">
-                <span>Total:</span>
-                <span>₹${bill.total_amount}</span>
+            <h2>ORTHONOVA POLYCLINIC</h2>
+            <p>Redg No: SUN/00051/2024</p>
+            <p>Near Tarini Mandir, Panposh Road, Civil Township, Rourkela</p>
+            <hr />
+            <h3>INVOICE</h3>
+            <div class="flex justify-between items-start">
+              <div>
+                <p>Patient ID: ${bill.patient_id}</p>
+                <p>Date: ${new Date(bill.created_at).toLocaleDateString()}</p>
               </div>
-              <div class="flex">
-                <span>Paid:</span>
-                <span>₹${bill.paid_amount}</span>
-              </div>
-              <div class="flex">
-                <span>Balance:</span>
-                <span>₹${bill.balance}</span>
-              </div>
+            </div>
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr>
+                  <th class="border px-2 py-1">Item Name</th>
+                  <th class="border px-2 py-1">Unit Price</th>
+                  <th class="border px-2 py-1">Quantity</th>
+                  <th class="border px-2 py-1">Amount</th>
+                  <th class="border px-2 py-1">Discount</th>
+                  <th class="border px-2 py-1">Final Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bill.bill_items
+                  .map(
+                    (item) => `
+                      <tr>
+                        <td class="border px-2 py-1">${item.service_id.service_name}</td>
+                        <td class="border px-2 py-1">₹${item.service_id.price}</td>
+                        <td class="border px-2 py-1">${item.quantity}</td>
+                        <td class="border px-2 py-1">₹${item.service_id.price * item.quantity}</td>
+                        <td class="border px-2 py-1">₹0</td>
+                        <td class="border px-2 py-1">₹${item.service_id.price * item.quantity}</td>
+                      </tr>
+                    `
+                  )
+                  .join('')}
+              </tbody>
+            </table>
+            <div class="mt-6 space-y-3">
+              <p class="text-sm">Final Amount: ₹${bill.total_amount}</p>
+              <p class="text-sm">Payment Type: ${bill.status}</p>
+            </div>
+            <div class="mt-6 space-y-3">
+              <p class="text-sm">MOB NO: 7681004245</p>
+              <p class="text-sm">Email ID: info.orthonova@gmail.com</p>
             </div>
             <script>window.print();</script>
           </div>
@@ -1481,6 +1540,7 @@ export default function App() {
           <div className="col-span-3 text-center py-20 bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg">
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Orthonova Clinic</h3>
             <p className="text-lg text-gray-600 mb-6">Patient, Doctor, Services & Billing System</p>
+            <Login onLogin={handleLogin} />
           </div>
         )}
       </main>
