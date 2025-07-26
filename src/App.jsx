@@ -733,7 +733,7 @@ function PrescriptionForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.patientId || !formData.doctorId || !formData.diagnosis || !formData.medications) {
+    if (!formData.patientId || !formData.doctorId ) {
       setError('All fields are required.');
       return;
     }
