@@ -1469,6 +1469,10 @@ export default function App() {
                   {activeTab === 'NewPatientRegistration' && <PatientRegistration />}
                   {activeTab === 'Billing' && <BillingPage />}
                   {activeTab === 'Prescriptions' && <PrescriptionForm />}
+                  {activeTab === 'createUser' && <UserManagement />}
+                  {activeTab === 'doctorRegistration' && <DoctorRegistration />}
+                  {activeTab === 'addService' && <ServiceCatalog />}
+                  {activeTab === 'billHistory' && <BillHistory />}
                 </div>
         </>
       )}
