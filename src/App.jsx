@@ -1236,7 +1236,10 @@ function BillHistory() {
             service_name,
             price
           ),
-          quantity
+          quantity,
+          amount,
+          discount,
+          final_amount
         )
       `);
 
@@ -1275,35 +1278,59 @@ function BillHistory() {
         </head>
         <body>
           <div class="print-area">
-            <h2>Orthonova Clinic</h2>
-            <p><strong>Bill Number:</strong> ${bill.bill_number}</p>
-            <p><strong>Patient ID:</strong> ${bill.patient_id}</p>
-            <p><strong>Date:</strong> ${new Date(bill.created_at).toLocaleDateString()}</p>
-            <hr class="my-4" />
-            <h3>Bill Details</h3>
-            <ul>
-              ${bill.bill_items
-                .map(
-                  (item) =>
-                    `<li>${item.service_id.service_name} (₹${item.service_id.price}) x ${item.quantity} = ₹${
-                      item.service_id.price * item.quantity
-                    }</li>`
-                )
-                .join('')}
-            </ul>
-            <div class="total">
-              <div class="flex">
-                <span>Total:</span>
-                <span>₹${bill.total_amount}</span>
+            <h2>ORTHONOVA POLYCLINIC</h2>
+            <p>Redg No: SUN/00051/2024</p>
+            <p>Near Tarini Mandir, Panposh Road, Civil Township, Rourkela</p>
+            <hr />
+            <h3>INVOICE</h3>
+            <div class="flex justify-between items-start">
+              <div>
+                <p>Name: ${bill.patient.name}</p>
+                <p>Age: ${calculateAge(bill.patient.dob)}</p>
+                <p>Gender: ${bill.patient.gender}</p>
+                <p>Contact Number: ${bill.patient.contact_number}</p>
+                <p>Address: ${bill.patient.address}</p>
               </div>
-              <div class="flex">
-                <span>Paid:</span>
-                <span>₹${bill.paid_amount}</span>
+              <div>
+                <p>Order No: ${bill.bill_number}</p>
+                <p>Date: ${new Date(bill.created_at).toLocaleDateString()}</p>
               </div>
-              <div class="flex">
-                <span>Balance:</span>
-                <span>₹${bill.balance}</span>
-              </div>
+            </div>
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr>
+                  <th class="border px-2 py-1">Item Name</th>
+                  <th class="border px-2 py-1">Unit Price</th>
+                  <th class="border px-2 py-1">Quantity</th>
+                  <th class="border px-2 py-1">Amount</th>
+                  <th class="border px-2 py-1">Discount</th>
+                  <th class="border px-2 py-1">Final Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${bill.bill_items
+                  .map(
+                    (item) => `
+                      <tr>
+                        <td class="border px-2 py-1">${item.service_id.service_name}</td>
+                        <td class="border px-2 py-1">₹${item.service_id.price}</td>
+                        <td class="border px-2 py-1">${item.quantity}</td>
+                        <td class="border px-2 py-1">₹${item.amount}</td>
+                        <td class="border px-2 py-1">₹${item.discount || 0}</td>
+                        <td class="border px-2 py-1">₹${item.final_amount}</td>
+                      </tr>
+                    `
+                  )
+                  .join('')}
+              </tbody>
+            </table>
+            <div class="mt-6 space-y-3">
+              <p class="text-sm">Final Amount: ₹${bill.total_amount}</p>
+              <p class="text-sm">Payment Type: ${bill.status}</p>
+            </div>
+            <div class="mt-6 space-y-3">
+              <p class="text-sm">MOB NO: 7681004245</p>
+              <p class="text-sm">Email ID: info.orthonova@gmail.com</p>
             </div>
             <script>window.print();</script>
           </div>
@@ -1316,6 +1343,7 @@ function BillHistory() {
   return (
     <div className="bg-white p-6 rounded-lg shadow">
       <h2 className="text-xl font-bold mb-4">Bill History</h2>
+
       <div className="mb-4">
         <input
           type="text"
@@ -1331,8 +1359,8 @@ function BillHistory() {
             <div key={index} className="p-4 border border-gray-200 rounded-md bg-gray-50">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm text-gray-600">Bill #<strong>{bill.bill_number}</strong></p>
-                  <p className="text-sm text-gray-600">Patient: <strong>{bill.patient_id}</strong></p>
+                  <p className="text-sm text-gray-600">Bill #: <strong>{bill.bill_number}</strong></p>
+                  <p className="text-sm text-gray-600">Patient: <strong>{bill.patient.name}</strong></p>
                   <p className="text-sm text-gray-600">Date: {new Date(bill.created_at).toLocaleDateString()}</p>
                 </div>
                 <div className="text-right">
