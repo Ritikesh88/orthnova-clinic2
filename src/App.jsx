@@ -1540,7 +1540,7 @@ export default function App() {
           <div className="col-span-3 text-center py-20 bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg">
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Orthonova Clinic</h3>
             <p className="text-lg text-gray-600 mb-6">Patient, Doctor, Services & Billing System</p>
-            <Login onLogin={handleLogin} />
+            
           </div>
         )}
       </main>
